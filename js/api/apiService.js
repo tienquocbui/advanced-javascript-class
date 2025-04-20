@@ -1,5 +1,5 @@
 // Base URL for all API requests
-const BASE_URL = 'http://localhost:3001';
+const BASE_URL = 'https://kelvins-assignment.onrender.com';
 
 /**
  * Generic function to make API requests
