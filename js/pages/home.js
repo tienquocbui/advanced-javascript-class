@@ -28,7 +28,9 @@ export const renderHomePage = async () => {
     
     try {
         const response = await productsAPI.getAllProducts();
-        const products = response.products;
+        console.log('Home page response:', response);
+        
+        const products = response?.products || [];
         
         const featuredProducts = products.slice(0, 3);
         

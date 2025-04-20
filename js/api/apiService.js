@@ -1,4 +1,3 @@
-// Base URL for all API requests
 const BASE_URL = '';
 
 /**
@@ -11,6 +10,8 @@ const BASE_URL = '';
  */
 const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = false) => {
     const url = `${BASE_URL}${endpoint}`;
+    
+    console.log('Making API request to:', url);
     
     const headers = {
         'Content-Type': 'application/json'
@@ -37,9 +38,13 @@ const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = 
     try {
         const response = await fetch(url, options);
         
+        console.log('API Response status:', response.status);
+        
         const contentType = response.headers.get('Content-Type');
         if (contentType && contentType.includes('application/json')) {
             const responseData = await response.json();
+            
+            console.log('API Response data:', responseData);
             
             if (!response.ok) {
                 throw new Error(responseData.message || 'An error occurred');
@@ -51,7 +56,9 @@ const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = 
                 throw new Error('An error occurred');
             }
             
-            return await response.text();
+            const textResponse = await response.text();
+            console.log('API Text response:', textResponse);
+            return textResponse;
         }
     } catch (error) {
         console.error('API Request Error:', error);
