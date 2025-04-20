@@ -39,7 +39,9 @@ export const renderProductsPage = async () => {
             const productsContainer = document.querySelector('.products-container');
             productsContainer.innerHTML = `
                 <div class="no-products">
-                    <p>No products available.</p>
+                    <i class="fas fa-box-open" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 20px;"></i>
+                    <p>No products available at the moment.</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-tertiary);">Please check back later or try a different category.</p>
                 </div>
             `;
             return;

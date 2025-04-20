@@ -183,6 +183,11 @@ const handleSignupSubmit = async (e) => {
 const handleProfileUpdate = async (e) => {
     e.preventDefault();
     
+    const updateButton = e.target.querySelector('button[type="submit"]');
+    const originalButtonText = updateButton.textContent;
+    updateButton.textContent = 'Updating...';
+    updateButton.disabled = true;
+    
     const firstName = document.getElementById('updateFirstName').value;
     const lastName = document.getElementById('updateLastName').value;
     const profileImage = document.getElementById('profileImage').files[0];
@@ -192,10 +197,29 @@ const handleProfileUpdate = async (e) => {
     formData.append('lastName', lastName);
     
     if (profileImage) {
+        if (profileImage.size > 5 * 1024 * 1024) {
+            updateButton.textContent = originalButtonText;
+            updateButton.disabled = false;
+            showToast('Image too large. Please select an image under 5MB.', 'error');
+            return;
+        }
+        
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (!validTypes.includes(profileImage.type)) {
+            updateButton.textContent = originalButtonText;
+            updateButton.disabled = false;
+            showToast('Invalid file type. Please select a JPEG, PNG, WebP or GIF image.', 'error');
+            return;
+        }
+        
         formData.append('image', profileImage);
+        console.log('Adding image to form data:', profileImage.name, profileImage.type, profileImage.size);
     }
     
     try {
+        console.log('Submitting profile update with data:', 
+            { firstName, lastName, hasImage: !!profileImage });
+        
         const response = await authAPI.updateUserProfile(formData);
         
         const updatedUserData = response.user;
@@ -209,6 +233,10 @@ const handleProfileUpdate = async (e) => {
             detail: updatedUserData
         }));
     } catch (error) {
+        console.error('Profile update error:', error);
         showToast(error.message || 'Failed to update profile. Please try again.', 'error');
+    } finally {
+        updateButton.textContent = originalButtonText;
+        updateButton.disabled = false;
     }
 }; 

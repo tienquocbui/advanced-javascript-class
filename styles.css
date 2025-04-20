@@ -740,6 +740,20 @@ main {
 
 .products-header h1 {
     margin-left: 10px;
+    font-size: 2rem;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.products-header h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background-color: var(--accent);
+    border-radius: 3px;
 }
 
 .products-filter {

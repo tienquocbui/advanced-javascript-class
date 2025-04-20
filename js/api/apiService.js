@@ -64,9 +64,10 @@ const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = 
  * @param {string} endpoint
  * @param {FormData} formData 
  * @param {boolean} requiresAuth
+ * @param {string} method
  * @returns {Promise<any>} 
  */
-const uploadRequest = async (endpoint, formData, requiresAuth = true) => {
+const uploadRequest = async (endpoint, formData, requiresAuth = true, method = 'POST') => {
     const url = `${BASE_URL}${endpoint}`;
     
     const headers = {};
@@ -81,16 +82,24 @@ const uploadRequest = async (endpoint, formData, requiresAuth = true) => {
     
     // Setup request options
     const options = {
-        method: 'PUT',
+        method,
         headers,
         body: formData,
         credentials: 'omit'
     };
     
     try {
-        console.log('Making upload request to:', url);
+        console.log(`Making ${method} upload request to:`, url);
         const response = await fetch(url, options);
-        const responseData = await response.json();
+        
+        let responseData;
+        try {
+            responseData = await response.json();
+        } catch (e) {
+            const text = await response.text();
+            console.log('Non-JSON response:', text);
+            responseData = { message: text };
+        }
         
         if (!response.ok) {
             throw new Error(responseData.message || 'An error occurred');
@@ -108,7 +117,7 @@ export const authAPI = {
     signup: (userData) => apiRequest('/api/users/signup', 'POST', userData),
     login: (credentials) => apiRequest('/api/users/login', 'POST', credentials),
     getUserProfile: () => apiRequest('/api/users/userProfile', 'GET', null, true),
-    updateUserProfile: (formData) => uploadRequest('/api/users/userUpdate', formData, true)
+    updateUserProfile: (formData) => uploadRequest('/api/users/userUpdate', formData, true, 'PUT')
 };
 
 // Products
