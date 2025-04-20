@@ -1,4 +1,5 @@
-const BASE_URL = '';
+// Base URL for all API requests
+const BASE_URL = 'https://kelvins-assignment.onrender.com';
 
 /**
  * Generic function to make API requests
@@ -28,7 +29,8 @@ const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = 
     const options = {
         method,
         headers,
-        credentials: 'omit'
+        credentials: 'omit',
+        mode: 'cors'
     };
     
     if (method !== 'GET' && data) {
