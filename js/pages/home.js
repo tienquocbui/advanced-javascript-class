@@ -22,6 +22,7 @@ export const renderHomePage = async () => {
     `;
     
     document.getElementById('shop-now').addEventListener('click', () => {
+        console.log('Shop Now button clicked');
         navigateTo('products');
     });
     
@@ -57,6 +58,7 @@ export const renderHomePage = async () => {
         featuredProductsSection.appendChild(viewAllButton);
         
         viewAllButton.querySelector('.view-all').addEventListener('click', () => {
+            console.log('View All Products button clicked');
             navigateTo('products');
         });
         

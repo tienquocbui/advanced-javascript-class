@@ -608,6 +608,19 @@ main {
 .view-all-container {
     text-align: center;
     margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.view-all-container .btn {
+    padding: 12px 24px;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.view-all-container .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 /* Promo Section */
@@ -715,6 +728,7 @@ main {
 /* Products Page */
 .products-page {
     margin-bottom: 40px;
+    padding: 0 20px;
 }
 
 .products-header {
@@ -722,6 +736,10 @@ main {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
+}
+
+.products-header h1 {
+    margin-left: 10px;
 }
 
 .products-filter {
