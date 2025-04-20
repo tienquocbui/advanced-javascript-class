@@ -1,0 +1,96 @@
+import { authAPI } from '../api/apiService.js';
+import { showToast } from './toast.js';
+import { updateUserInterface } from '../app.js';
+import { renderLoginModal, renderSignupModal, renderAccountModal } from '../components/authModals.js';
+
+export const initAuth = () => {
+    const userToggle = document.getElementById('user-toggle');
+    
+    userToggle.addEventListener('click', () => {
+        const token = localStorage.getItem('token');
+        
+        if (token) {
+            renderAccountModal();
+        } else {
+            renderLoginModal();
+        }
+    });
+    
+    document.addEventListener('login', handleLogin);
+    document.addEventListener('signup', handleSignup);
+    document.addEventListener('logout', handleLogout);
+    document.addEventListener('showSignup', () => renderSignupModal());
+    document.addEventListener('showLogin', () => renderLoginModal());
+};
+
+const handleLogin = async (event) => {
+    const { email, password } = event.detail;
+    
+    try {
+        const response = await authAPI.login({ email, password });
+        
+        // Save token and user data to localStorage
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user', JSON.stringify(response.user));
+        
+        updateUserInterface(true, response.user);
+        
+        const modalContainer = document.getElementById('modal-container');
+        const modalBackdrop = document.getElementById('modal-backdrop');
+        modalContainer.classList.add('hidden');
+        modalBackdrop.classList.add('hidden');
+        
+        showToast('Login successful!', 'success');
+        
+        document.dispatchEvent(new CustomEvent('userLoggedIn', { 
+            detail: response.user 
+        }));
+    } catch (error) {
+        showToast(error.message || 'Login failed. Please try again.', 'error');
+    }
+};
+
+const handleSignup = async (event) => {
+    const { firstName, lastName, email, password } = event.detail;
+    console.log('Signup attempt with data:', { firstName, lastName, email, password: '***' });
+    
+    try {
+        console.log('Calling authAPI.signup...');
+        const result = await authAPI.signup({ firstName, lastName, email, password });
+        console.log('Signup API response:', result);
+        
+        showToast('Account created successfully! You can now log in.', 'success');
+        
+        // Switch to login modal
+        renderLoginModal();
+    } catch (error) {
+        console.error('Signup error:', error);
+        showToast(error.message || 'Signup failed. Please try again.', 'error');
+    }
+};
+
+const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Update UI
+    updateUserInterface(false);
+    
+    showToast('You have been logged out.', 'info');
+    
+    const modalContainer = document.getElementById('modal-container');
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    modalContainer.classList.add('hidden');
+    modalBackdrop.classList.add('hidden');
+    
+    document.dispatchEvent(new CustomEvent('userLoggedOut'));
+};
+
+export const isLoggedIn = () => {
+    return !!localStorage.getItem('token');
+};
+
+export const getCurrentUser = () => {
+    const userJson = localStorage.getItem('user');
+    return userJson ? JSON.parse(userJson) : null;
+}; 

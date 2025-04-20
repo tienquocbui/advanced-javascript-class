@@ -1,0 +1,112 @@
+import { addToCart } from '../utils/cart.js';
+import { navigateTo } from '../utils/navigation.js';
+
+/**
+ * Create a product card element
+ * @param {Object} product 
+ * @returns {HTMLElement} 
+ */
+export const createProductCard = (product) => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    
+    const imageUrl = product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image';
+    
+    // Build card HTML
+    card.innerHTML = `
+        <img class="product-image" src="${imageUrl}" alt="${product.title}">
+        <div class="product-info">
+            <h3 class="product-title">${product.title}</h3>
+            <div class="product-price">$${product.price}</div>
+            <p class="product-description">${product.description}</p>
+            <div class="product-actions">
+                <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                <button class="btn btn-secondary view-details">Details</button>
+            </div>
+        </div>
+    `;
+    
+    const addToCartBtn = card.querySelector('.add-to-cart');
+    const viewDetailsBtn = card.querySelector('.view-details');
+    
+    addToCartBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        addToCart(product);
+    });
+    
+    viewDetailsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navigateTo('product', { id: product._id });
+    });
+    
+    card.addEventListener('click', () => {
+        navigateTo('product', { id: product._id });
+    });
+    
+    return card;
+};
+
+/**
+ * Create a product card HTML string (for template literals)
+ * @param {Object} product 
+ * @returns {string} 
+ */
+export const productCardTemplate = (product) => {
+    const imageUrl = product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image';
+    
+    return `
+        <div class="product-card" data-id="${product._id}">
+            <img class="product-image" src="${imageUrl}" alt="${product.title}">
+            <div class="product-info">
+                <h3 class="product-title">${product.title}</h3>
+                <div class="product-price">$${product.price}</div>
+                <p class="product-description">${product.description}</p>
+                <div class="product-actions">
+                    <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    <button class="btn btn-secondary view-details">Details</button>
+                </div>
+            </div>
+        </div>
+    `;
+};
+
+/**
+ * Add event listeners to product cards rendered as HTML strings
+ * @param {HTMLElement} container
+ */
+export const addProductCardListeners = (container) => {
+    // Add to cart buttons
+    container.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const card = e.target.closest('.product-card');
+            const productId = card.dataset.id;
+            
+            try {
+                const productData = JSON.parse(card.dataset.product);
+                addToCart(productData);
+            } catch (error) {
+                import('../api/apiService.js').then(({ productsAPI }) => {
+                    productsAPI.getProductById(productId).then(response => {
+                        addToCart(response.product);
+                    });
+                });
+            }
+        });
+    });
+    
+    container.querySelectorAll('.view-details').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const productId = e.target.closest('.product-card').dataset.id;
+            navigateTo('product', { id: productId });
+        });
+    });
+    
+    container.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const productId = card.dataset.id;
+            navigateTo('product', { id: productId });
+        });
+    });
+}; 
