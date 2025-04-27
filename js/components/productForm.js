@@ -125,14 +125,20 @@ const handleProductSubmit = async (e, productId = null) => {
             return;
         }
         
+        const numericPrice = parseFloat(price).toFixed(2);
+        
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('price', price);
+        formData.append('price', numericPrice);
         formData.append('description', description);
         
-        // Only append image if one is selected
+        formData.append('category', 'general');
+        
+        if (!productImage) {
+            formData.append('imageUrl', '/assets/product.png');
+        }
+        
         if (productImage) {
-            // Validate image size and type
             if (productImage.size > 5 * 1024 * 1024) {
                 submitButton.textContent = originalButtonText;
                 submitButton.disabled = false;
@@ -152,8 +158,12 @@ const handleProductSubmit = async (e, productId = null) => {
         }
         
         console.log('Submitting product with data:', { 
-            title, price, description, 
-            hasImage: !!productImage
+            title, 
+            price: numericPrice, 
+            description, 
+            category: 'general',
+            hasImage: !!productImage,
+            defaultImage: !productImage
         });
         
         let response;

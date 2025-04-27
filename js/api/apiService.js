@@ -89,15 +89,12 @@ const uploadRequest = async (endpoint, formData, requiresAuth = true, method = '
         headers['Authorization'] = `Bearer ${token}`;
     }
     
-    // Don't add Content-Type header - let the browser set it with the boundary
-    // for multipart/form-data requests
-    
     // Setup request options
     const options = {
         method,
         headers,
         body: formData,
-        credentials: 'omit',
+        credentials: 'omit', 
         mode: 'cors'
     };
     
@@ -113,11 +110,12 @@ const uploadRequest = async (endpoint, formData, requiresAuth = true, method = '
         } catch (e) {
             const text = await response.text();
             console.log('Non-JSON response:', text);
-            responseData = { message: text };
+            responseData = { message: text || 'Unknown server error' };
         }
         
         if (!response.ok) {
-            throw new Error(responseData.message || 'An error occurred');
+            console.error('Server response error:', responseData);
+            throw new Error(responseData.message || `Server returned ${response.status}: ${response.statusText}`);
         }
         
         return responseData;
