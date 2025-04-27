@@ -29,9 +29,7 @@ export const createUserDropdown = () => {
     
     userToggle.addEventListener('click', (e) => {
         e.stopPropagation();
-        
         closeOpenModal();
-        
         userDropdown.classList.toggle('hidden');
     });
     
@@ -80,11 +78,10 @@ const updateUserDropdown = () => {
             </div>
         `;
         
-        // Add event listeners
         userDropdown.querySelector('#profile-link').addEventListener('click', (e) => {
             e.preventDefault();
             userDropdown.classList.add('hidden');
-            document.dispatchEvent(new CustomEvent('showProfile'));
+            navigateTo('profile');
         });
         
         userDropdown.querySelector('#orders-link').addEventListener('click', (e) => {

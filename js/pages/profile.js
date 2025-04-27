@@ -2,6 +2,7 @@ import { authAPI } from '../api/apiService.js';
 import { isLoggedIn, getCurrentUser } from '../utils/auth.js';
 import { navigateTo } from '../utils/navigation.js';
 import { showToast } from '../utils/toast.js';
+import { formatCurrency } from '../utils/formatter.js';
 
 export const renderProfilePage = async () => {
     const pageContainer = document.getElementById('page-container');
@@ -31,8 +32,8 @@ export const renderProfilePage = async () => {
                     </div>
                     
                     <div class="profile-info">
-                        <h2>${user.firstName} ${user.lastName}</h2>
-                        <p>${user.email}</p>
+                        <h2 class="profile-user-name">${user.firstName} ${user.lastName}</h2>
+                        <p class="profile-user-email">${user.email}</p>
                         <div class="profile-role">${user.role || 'Customer'}</div>
                     </div>
                     
