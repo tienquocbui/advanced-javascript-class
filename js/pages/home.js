@@ -74,17 +74,19 @@ export const renderHomePage = async () => {
                 </div>
             `;
         } else {
+            const DEFAULT_PRODUCT_IMAGE = '../assets/product.png';
+            
             featuredProducts.forEach(product => {
                 const card = document.createElement('div');
                 card.className = 'featured-product-card';
                 card.dataset.id = product._id;
                 
-                const imageUrl = product.imageUrl || './assets/product.png';
+                const imageUrl = product.imageUrl || DEFAULT_PRODUCT_IMAGE;
                 
                 card.innerHTML = `
                     <div class="product-image-container">
                         <img src="${imageUrl}" alt="${product.title}" class="product-image" 
-                             onerror="this.onerror=null; this.src='./assets/product.png';">
+                             onerror="this.onerror=null; this.src='${DEFAULT_PRODUCT_IMAGE}';">
                     </div>
                     <div class="product-info">
                         <h3 class="product-title">${product.title}</h3>

@@ -1,8 +1,7 @@
 import { addToCart } from '../utils/cart.js';
 import { navigateTo } from '../utils/navigation.js';
 
-// Default product image path
-const DEFAULT_PRODUCT_IMAGE = './assets/product.png';
+const DEFAULT_PRODUCT_IMAGE = '../assets/product.png';
 
 /**
  * Get a proper image URL or return default if empty
@@ -10,12 +9,10 @@ const DEFAULT_PRODUCT_IMAGE = './assets/product.png';
  * @returns {string} - A valid image URL
  */
 const getProperImageUrl = (url) => {
-    // If URL is empty, null, or undefined, return default image
     if (!url || url.trim() === '') {
         return DEFAULT_PRODUCT_IMAGE;
     }
     
-    // Handle postimg.cc URLs that don't end with an image extension
     if (url.includes('postimg.cc') && !url.includes('.jpg') && !url.includes('.png')) {
         return 'https://i.postimg.cc/BjSDrq9k/temp-Image-ki7-Rwh.jpg';
     }

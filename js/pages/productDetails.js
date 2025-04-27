@@ -3,8 +3,7 @@ import { navigateTo } from '../utils/navigation.js';
 import { addToCart } from '../utils/cart.js';
 import { showToast } from '../utils/toast.js';
 
-// Default product image
-const DEFAULT_PRODUCT_IMAGE = './assets/product.png';
+const DEFAULT_PRODUCT_IMAGE = '../assets/product.png';
 
 /**
  * Get a proper image URL or return default if empty
@@ -51,7 +50,6 @@ export const renderProductDetail = async (params) => {
             throw new Error('Product not found');
         }
         
-        // Get the image URL with proper handling
         const imageUrl = getProperImageUrl(product.imageUrl);
         
         pageContainer.innerHTML = `
