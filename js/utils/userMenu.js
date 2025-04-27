@@ -3,6 +3,16 @@ import { renderProductForm } from '../components/productForm.js';
 import { showToast } from './toast.js';
 import { navigateTo } from './navigation.js';
 
+const closeOpenModal = () => {
+    const modalContainer = document.getElementById('modal-container');
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    
+    if (modalContainer && !modalContainer.classList.contains('hidden')) {
+        modalContainer.classList.add('hidden');
+        modalBackdrop.classList.add('hidden');
+    }
+};
+
 export const createUserDropdown = () => {
     const userToggle = document.getElementById('user-toggle');
     
@@ -19,6 +29,9 @@ export const createUserDropdown = () => {
     
     userToggle.addEventListener('click', (e) => {
         e.stopPropagation();
+        
+        closeOpenModal();
+        
         userDropdown.classList.toggle('hidden');
     });
     
@@ -26,6 +39,10 @@ export const createUserDropdown = () => {
         if (!userDropdown.contains(e.target) && e.target !== userToggle) {
             userDropdown.classList.add('hidden');
         }
+    });
+    
+    document.addEventListener('modalOpened', () => {
+        userDropdown.classList.add('hidden');
     });
     
     document.addEventListener('userLoggedIn', updateUserDropdown);
@@ -66,34 +83,34 @@ const updateUserDropdown = () => {
         // Add event listeners
         userDropdown.querySelector('#profile-link').addEventListener('click', (e) => {
             e.preventDefault();
-            document.dispatchEvent(new CustomEvent('showProfile'));
             userDropdown.classList.add('hidden');
+            document.dispatchEvent(new CustomEvent('showProfile'));
         });
         
         userDropdown.querySelector('#orders-link').addEventListener('click', (e) => {
             e.preventDefault();
-            navigateTo('orders');
             userDropdown.classList.add('hidden');
+            navigateTo('orders');
         });
         
         if (isAdmin) {
             userDropdown.querySelector('#add-product-link').addEventListener('click', (e) => {
                 e.preventDefault();
-                renderProductForm();
                 userDropdown.classList.add('hidden');
+                renderProductForm();
             });
             
             userDropdown.querySelector('#admin-panel-link').addEventListener('click', (e) => {
                 e.preventDefault();
-                navigateTo('admin');
                 userDropdown.classList.add('hidden');
+                navigateTo('admin');
             });
         }
         
         userDropdown.querySelector('#logout-link').addEventListener('click', (e) => {
             e.preventDefault();
-            document.dispatchEvent(new CustomEvent('logout'));
             userDropdown.classList.add('hidden');
+            document.dispatchEvent(new CustomEvent('logout'));
         });
     } else {
         userDropdown.innerHTML = `
@@ -105,14 +122,14 @@ const updateUserDropdown = () => {
         
         userDropdown.querySelector('#login-link').addEventListener('click', (e) => {
             e.preventDefault();
-            document.dispatchEvent(new CustomEvent('showLogin'));
             userDropdown.classList.add('hidden');
+            document.dispatchEvent(new CustomEvent('showLogin'));
         });
         
         userDropdown.querySelector('#signup-link').addEventListener('click', (e) => {
             e.preventDefault();
-            document.dispatchEvent(new CustomEvent('showSignup'));
             userDropdown.classList.add('hidden');
+            document.dispatchEvent(new CustomEvent('showSignup'));
         });
     }
 };

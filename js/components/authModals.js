@@ -2,7 +2,16 @@ import { authAPI } from '../api/apiService.js';
 import { showToast } from '../utils/toast.js';
 import { getCurrentUser } from '../utils/auth.js';
 
+const closeUserDropdown = () => {
+    const userDropdown = document.querySelector('.user-dropdown');
+    if (userDropdown && !userDropdown.classList.contains('hidden')) {
+        userDropdown.classList.add('hidden');
+    }
+};
+
 const showAuthModal = (content) => {
+    closeUserDropdown();
+    
     const modalContainer = document.getElementById('modal-container');
     const modalBackdrop = document.getElementById('modal-backdrop');
     
@@ -10,6 +19,8 @@ const showAuthModal = (content) => {
     
     modalContainer.classList.remove('hidden');
     modalBackdrop.classList.remove('hidden');
+    
+    document.dispatchEvent(new CustomEvent('modalOpened'));
     
     const closeButton = modalContainer.querySelector('.modal-close');
     if (closeButton) {
@@ -25,6 +36,8 @@ const closeModal = () => {
     
     modalContainer.classList.add('hidden');
     modalBackdrop.classList.add('hidden');
+    
+    document.dispatchEvent(new CustomEvent('modalClosed'));
 };
 
 export const renderLoginModal = () => {
@@ -156,52 +169,155 @@ export const renderAccountModal = () => {
             <button class="modal-close">&times;</button>
             <div class="auth-container">
                 <h2>My Account</h2>
-                <form id="profile-form">
-                    <div class="user-profile-header">
-                        <div class="user-avatar large">
-                            ${user.imageUrl 
-                                ? `<img src="${user.imageUrl}" alt="${user.firstName}">` 
-                                : `<span>${user.firstName.charAt(0)}</span>`
-                            }
-                        </div>
-                        <div>
-                            <h3>${user.firstName} ${user.lastName}</h3>
-                            <p>${user.email}</p>
-                            <p><small>Role: ${user.role || 'Customer'}</small></p>
-                        </div>
+                <div class="user-profile-header">
+                    <div class="user-avatar large">
+                        ${user.imageUrl 
+                            ? `<img src="${user.imageUrl}" alt="${user.firstName}">` 
+                            : `<span>${user.firstName.charAt(0)}</span>`
+                        }
                     </div>
+                    <div>
+                        <h3>${user.firstName} ${user.lastName}</h3>
+                        <p>${user.email}</p>
+                        <p><small>Role: ${user.role || 'Customer'}</small></p>
+                    </div>
+                </div>
+                
+                <div class="account-options">
+                    <button id="edit-profile-btn" class="account-option-btn">
+                        <i class="fas fa-user-edit"></i>
+                        Edit Profile
+                    </button>
                     
-                    <div class="form-group">
-                        <label for="updateFirstName" class="form-label">First Name</label>
-                        <input type="text" id="updateFirstName" class="form-input apple-input" value="${user.firstName}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="updateLastName" class="form-label">Last Name</label>
-                        <input type="text" id="updateLastName" class="form-input apple-input" value="${user.lastName}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="profileImage" class="form-label">Profile Image</label>
-                        <input type="file" id="profileImage" class="form-input apple-input" accept="image/*">
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary apple-button">Update Profile</button>
-                        <button type="button" id="logout-btn" class="btn btn-secondary">Logout</button>
-                    </div>
-                </form>
+                    ${user.role === 'admin' ? `
+                    <button id="admin-dashboard-btn" class="account-option-btn admin-option">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Admin Dashboard
+                    </button>
+                    
+                    <button id="manage-products-btn" class="account-option-btn admin-option">
+                        <i class="fas fa-box"></i>
+                        Manage Products
+                    </button>
+                    
+                    <button id="view-orders-btn" class="account-option-btn admin-option">
+                        <i class="fas fa-shopping-cart"></i>
+                        View All Orders
+                    </button>
+                    ` : `
+                    <button id="my-orders-btn" class="account-option-btn">
+                        <i class="fas fa-shopping-bag"></i>
+                        My Orders
+                    </button>
+                    
+                    <button id="my-wishlist-btn" class="account-option-btn">
+                        <i class="fas fa-heart"></i>
+                        My Wishlist
+                    </button>
+                    `}
+                    
+                    <button id="logout-btn" class="account-option-btn logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
+                
+                <div id="edit-profile-section" class="account-section hidden">
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label for="updateFirstName" class="form-label">First Name</label>
+                            <input type="text" id="updateFirstName" class="form-input apple-input" value="${user.firstName}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="updateLastName" class="form-label">Last Name</label>
+                            <input type="text" id="updateLastName" class="form-input apple-input" value="${user.lastName}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileImage" class="form-label">Profile Image</label>
+                            <input type="file" id="profileImage" class="form-input apple-input" accept="image/*">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary apple-button">Update Profile</button>
+                            <button type="button" id="cancel-edit-btn" class="btn btn-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     `;
     
     showAuthModal(content);
     
+    const editProfileBtn = document.getElementById('edit-profile-btn');
+    const editProfileSection = document.getElementById('edit-profile-section');
     const profileForm = document.getElementById('profile-form');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
     const logoutButton = document.getElementById('logout-btn');
     
+    // Edit profile button
+    editProfileBtn.addEventListener('click', () => {
+        editProfileSection.classList.remove('hidden');
+    });
+    
+    // Cancel edit button
+    cancelEditBtn.addEventListener('click', () => {
+        editProfileSection.classList.add('hidden');
+    });
+    
+    // Profile form submit
     profileForm.addEventListener('submit', handleProfileUpdate);
+    
+    // Logout button
     logoutButton.addEventListener('click', () => {
         closeModal();
         document.dispatchEvent(new CustomEvent('logout'));
     });
+    
+    // Admin-specific buttons
+    if (user.role === 'admin') {
+        const adminDashboardBtn = document.getElementById('admin-dashboard-btn');
+        const manageProductsBtn = document.getElementById('manage-products-btn');
+        const viewOrdersBtn = document.getElementById('view-orders-btn');
+        
+        adminDashboardBtn.addEventListener('click', () => {
+            closeModal();
+            document.dispatchEvent(new CustomEvent('navigate', { 
+                detail: { path: '/admin' } 
+            }));
+        });
+        
+        manageProductsBtn.addEventListener('click', () => {
+            closeModal();
+            document.dispatchEvent(new CustomEvent('navigate', { 
+                detail: { path: '/admin/products' } 
+            }));
+        });
+        
+        viewOrdersBtn.addEventListener('click', () => {
+            closeModal();
+            document.dispatchEvent(new CustomEvent('navigate', { 
+                detail: { path: '/admin/orders' } 
+            }));
+        });
+    } else {
+        // Customer-specific buttons
+        const myOrdersBtn = document.getElementById('my-orders-btn');
+        const myWishlistBtn = document.getElementById('my-wishlist-btn');
+        
+        myOrdersBtn.addEventListener('click', () => {
+            closeModal();
+            document.dispatchEvent(new CustomEvent('navigate', { 
+                detail: { path: '/orders' } 
+            }));
+        });
+        
+        myWishlistBtn.addEventListener('click', () => {
+            closeModal();
+            document.dispatchEvent(new CustomEvent('navigate', { 
+                detail: { path: '/wishlist' } 
+            }));
+        });
+    }
 };
 
 const handleLoginSubmit = async (e) => {
