@@ -1,79 +1,47 @@
 import { isLoggedIn, getCurrentUser } from './auth.js';
+import { renderProductForm } from '../components/productForm.js';
+import { showToast } from './toast.js';
 import { navigateTo } from './navigation.js';
 
-let userDropdownVisible = false;
-
-export const initUserMenu = () => {
-    document.addEventListener('userLoggedIn', updateUserMenu);
-    document.addEventListener('userLoggedOut', updateUserMenu);
+export const createUserDropdown = () => {
+    const userToggle = document.getElementById('user-toggle');
     
-    document.addEventListener('click', (event) => {
-        if (
-            userDropdownVisible && 
-            !event.target.closest('#user-toggle') && 
-            !event.target.closest('.user-dropdown')
-        ) {
-            hideUserDropdown();
+    let userDropdown = document.querySelector('.user-dropdown');
+    if (!userDropdown) {
+        userDropdown = document.createElement('div');
+        userDropdown.className = 'user-dropdown hidden';
+        document.querySelector('.user-actions').appendChild(userDropdown);
+    }
+    
+    updateUserDropdown();
+    
+    userToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle('hidden');
+    });
+    
+    // Close dropdown when clicking elsewhere
+    document.addEventListener('click', (e) => {
+        if (!userDropdown.contains(e.target) && e.target !== userToggle) {
+            userDropdown.classList.add('hidden');
         }
     });
     
-    const userToggle = document.getElementById('user-toggle');
-    userToggle.addEventListener('click', toggleUserDropdown);
+    // Listen for user status changes
+    document.addEventListener('userLoggedIn', updateUserDropdown);
+    document.addEventListener('userLoggedOut', updateUserDropdown);
+    document.addEventListener('userUpdated', updateUserDropdown);
 };
 
-const toggleUserDropdown = () => {
-    if (userDropdownVisible) {
-        hideUserDropdown();
-    } else {
-        showUserDropdown();
-    }
-};
-
-const showUserDropdown = () => {
-    let dropdown = document.querySelector('.user-dropdown');
-    
-    if (!dropdown) {
-        dropdown = document.createElement('div');
-        dropdown.className = 'user-dropdown';
-        document.body.appendChild(dropdown);
-    }
-    
-    renderUserDropdown();
-    
-    dropdown.style.display = 'block';
-    userDropdownVisible = true;
-};
-
-const hideUserDropdown = () => {
-    const dropdown = document.querySelector('.user-dropdown');
-    
-    if (dropdown) {
-        dropdown.style.display = 'none';
-    }
-    
-    userDropdownVisible = false;
-};
-
-const updateUserMenu = () => {
-    if (userDropdownVisible) {
-        renderUserDropdown();
-    }
-};
-
-const renderUserDropdown = () => {
-    const dropdown = document.querySelector('.user-dropdown');
-    
-    if (!dropdown) return;
+const updateUserDropdown = () => {
+    const userDropdown = document.querySelector('.user-dropdown');
+    if (!userDropdown) return;
     
     if (isLoggedIn()) {
         const user = getCurrentUser();
+        const isAdmin = user?.role === 'admin';
         
-        if (!user) {
-            hideUserDropdown();
-            return;
-        }
-        
-        dropdown.innerHTML = `
+        userDropdown.innerHTML = `
             <div class="user-info">
                 <div class="user-avatar">
                     ${user.imageUrl 
@@ -81,66 +49,74 @@ const renderUserDropdown = () => {
                         : `<span>${user.firstName.charAt(0)}</span>`
                     }
                 </div>
-                <div class="user-details">
+                <div>
                     <div class="user-name">${user.firstName} ${user.lastName}</div>
                     <div class="user-email">${user.email}</div>
                 </div>
             </div>
             <div class="user-menu">
-                <a href="#" data-action="profile">My Profile</a>
-                <a href="#" data-action="orders">My Orders</a>
-                ${user.role === 'admin' ? '<a href="#" data-action="admin">Admin Panel</a>' : ''}
-                <a href="#" data-action="logout">Logout</a>
+                <a href="#" id="profile-link">My Profile</a>
+                <a href="#" id="orders-link">My Orders</a>
+                ${isAdmin ? '<a href="#" id="add-product-link">Add New Product</a>' : ''}
+                ${isAdmin ? '<a href="#" id="admin-panel-link">Admin Panel</a>' : ''}
+                <a href="#" id="logout-link">Logout</a>
             </div>
         `;
         
-        addUserMenuEventListeners(dropdown);
+        // Add event listeners
+        userDropdown.querySelector('#profile-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.dispatchEvent(new CustomEvent('showProfile'));
+            userDropdown.classList.add('hidden');
+        });
+        
+        userDropdown.querySelector('#orders-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('orders');
+            userDropdown.classList.add('hidden');
+        });
+        
+        if (isAdmin) {
+            userDropdown.querySelector('#add-product-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                renderProductForm();
+                userDropdown.classList.add('hidden');
+            });
+            
+            userDropdown.querySelector('#admin-panel-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('admin');
+                userDropdown.classList.add('hidden');
+            });
+        }
+        
+        userDropdown.querySelector('#logout-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.dispatchEvent(new CustomEvent('logout'));
+            userDropdown.classList.add('hidden');
+        });
     } else {
-        dropdown.innerHTML = `
+        userDropdown.innerHTML = `
             <div class="user-menu">
-                <a href="#" data-action="login">Login</a>
-                <a href="#" data-action="signup">Sign Up</a>
+                <a href="#" id="login-link">Login</a>
+                <a href="#" id="signup-link">Sign Up</a>
             </div>
         `;
         
-        addUserMenuEventListeners(dropdown);
+        userDropdown.querySelector('#login-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.dispatchEvent(new CustomEvent('showLogin'));
+            userDropdown.classList.add('hidden');
+        });
+        
+        userDropdown.querySelector('#signup-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.dispatchEvent(new CustomEvent('showSignup'));
+            userDropdown.classList.add('hidden');
+        });
     }
 };
 
-const addUserMenuEventListeners = (dropdown) => {
-    const menuItems = dropdown.querySelectorAll('.user-menu a');
-    
-    menuItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const action = item.getAttribute('data-action');
-            
-            switch (action) {
-                case 'profile':
-                    hideUserDropdown();
-                    navigateTo('profile');
-                    break;
-                case 'orders':
-                    hideUserDropdown();
-                    navigateTo('orders');
-                    break;
-                case 'admin':
-                    hideUserDropdown();
-                    navigateTo('admin');
-                    break;
-                case 'logout':
-                    hideUserDropdown();
-                    document.dispatchEvent(new CustomEvent('logout'));
-                    break;
-                case 'login':
-                    hideUserDropdown();
-                    document.dispatchEvent(new CustomEvent('showLogin'));
-                    break;
-                case 'signup':
-                    hideUserDropdown();
-                    document.dispatchEvent(new CustomEvent('showSignup'));
-                    break;
-            }
-        });
-    });
+export const initUserMenu = () => {
+    createUserDropdown();
 }; 

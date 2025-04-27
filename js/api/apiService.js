@@ -133,7 +133,8 @@ export const authAPI = {
 export const productsAPI = {
     getAllProducts: () => apiRequest('/api/products'),
     getProductById: (id) => apiRequest(`/api/products/${id}`),
-    createProduct: (productData) => apiRequest('/api/products/create', 'POST', productData, true)
+    createProduct: (productData) => uploadRequest('/api/products/create', productData, true, 'POST'),
+    updateProduct: (id, productData) => uploadRequest(`/api/products/update/${id}`, productData, true, 'PUT')
 };
 
 export const ordersAPI = {
