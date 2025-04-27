@@ -12,9 +12,9 @@ export const renderHomePage = async () => {
             <p>Discover our premium products hehehe</p>
             <button id="shop-now" class="btn btn-primary">Shop Now</button>
         </div>
-        <div class="featured-products">
-            <h2>Featured Products</h2>
-            <div class="product-grid-loading">
+        <div class="featured-products-section">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="loading-container">
                 <div class="loading-spinner"></div>
                 <p>Loading products...</p>
             </div>
@@ -61,52 +61,97 @@ export const renderHomePage = async () => {
         
         const featuredProducts = products.slice(0, 3);
         
-        const productGrid = document.createElement('div');
-        productGrid.className = 'product-grid';
+        const featuredSection = document.querySelector('.featured-products-section');
+        featuredSection.querySelector('.loading-container').remove();
+        
+        const productsContainer = document.createElement('div');
+        productsContainer.className = 'featured-products-container';
         
         if (featuredProducts.length === 0) {
-            productGrid.innerHTML = `
+            productsContainer.innerHTML = `
                 <div class="no-products">
-                    <p>No products available</p>
+                    <p>No products available at this time.</p>
                 </div>
             `;
         } else {
             featuredProducts.forEach(product => {
-                const card = createProductCard(product);
-                productGrid.appendChild(card);
+                const card = document.createElement('div');
+                card.className = 'featured-product-card';
+                card.dataset.id = product._id;
+                
+                const imageUrl = product.imageUrl || './assets/product.png';
+                
+                card.innerHTML = `
+                    <div class="product-image-container">
+                        <img src="${imageUrl}" alt="${product.title}" class="product-image" 
+                             onerror="this.onerror=null; this.src='./assets/product.png';">
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">${product.title}</h3>
+                        <div class="product-price">$${product.price}</div>
+                        <p class="product-description">${product.description}</p>
+                        <div class="product-actions">
+                            <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                            <button class="btn btn-secondary view-details">Details</button>
+                        </div>
+                    </div>
+                `;
+                
+                productsContainer.appendChild(card);
             });
         }
         
-        const featuredProductsSection = document.querySelector('.featured-products');
-        featuredProductsSection.querySelector('.product-grid-loading').remove();
-        featuredProductsSection.appendChild(productGrid);
+        featuredSection.appendChild(productsContainer);
         
         const viewAllButton = document.createElement('div');
         viewAllButton.className = 'view-all-container';
-        viewAllButton.innerHTML = '<button class="btn btn-secondary view-all">View All Products</button>';
-        featuredProductsSection.appendChild(viewAllButton);
+        viewAllButton.innerHTML = '<button class="btn btn-accent view-all">View All Products</button>';
+        featuredSection.appendChild(viewAllButton);
+        
+        const productCards = document.querySelectorAll('.featured-product-card');
+        
+        productCards.forEach(card => {
+            const productId = card.dataset.id;
+            const product = featuredProducts.find(p => p._id === productId);
+            
+            if (!product) return;
+            
+            const addToCartBtn = card.querySelector('.add-to-cart');
+            addToCartBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                addToCart(product);
+                showToast(`${product.title} added to cart!`, 'success');
+            });
+            
+            const viewDetailsBtn = card.querySelector('.view-details');
+            viewDetailsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                navigateTo('product', { id: product._id });
+            });
+            
+            card.addEventListener('click', () => {
+                navigateTo('product', { id: product._id });
+            });
+        });
         
         viewAllButton.querySelector('.view-all').addEventListener('click', () => {
             console.log('View All Products button clicked');
-            if (window.location.href.includes('kelvinbui.netlify.app')) {
-                window.location.href = 'https://kelvinbui.netlify.app/products';
-            } else {
-                navigateTo('products');
-            }
+            navigateTo('products');
         });
         
     } catch (error) {
         console.error('Error fetching products:', error);
         
-        const featuredProductsSection = document.querySelector('.featured-products');
-        featuredProductsSection.querySelector('.product-grid-loading').innerHTML = `
+        const featuredSection = document.querySelector('.featured-products-section');
+        featuredSection.querySelector('.loading-container').innerHTML = `
             <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
                 <p>Failed to load products. Please try again later.</p>
                 <button class="btn btn-primary retry">Retry</button>
             </div>
         `;
         
-        featuredProductsSection.querySelector('.retry').addEventListener('click', () => {
+        featuredSection.querySelector('.retry').addEventListener('click', () => {
             renderHomePage();
         });
         
