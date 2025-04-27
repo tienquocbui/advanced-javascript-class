@@ -77,13 +77,8 @@ export const renderProductForm = (product = null) => {
                 </div>
                 
                 <div class="form-group">
-                    <label for="imageUrl" class="form-label">Image URL (Optional)</label>
-                    <input type="text" id="imageUrl" class="apple-input" value="${isEdit ? product.imageUrl : 'https://postimg.cc/BjSDrq9k'}" placeholder="Enter image URL or use default">
-                    <small class="form-help">You can use the default Postimg URL or upload your own image below</small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="productImage" class="form-label">Upload Product Image (Optional)</label>
+                    <label for="productImage" class="form-label">Product Image (Optional)</label>
+                    <p class="form-help" style="margin-bottom: 8px;">If no image is selected, a default image will be used</p>
                     <input type="file" id="productImage" class="apple-input" accept="image/*" style="padding-top: 10px;">
                     ${displayImageUrl ? `
                     <div class="current-image">
@@ -116,54 +111,49 @@ const handleProductSubmit = async (e, productId = null) => {
     submitButton.textContent = 'Processing...';
     submitButton.disabled = true;
     
-    const title = document.getElementById('title').value.trim();
-    const price = document.getElementById('price').value.trim();
-    const description = document.getElementById('description').value.trim();
-    const imageUrl = document.getElementById('imageUrl').value.trim();
-    const productImage = document.getElementById('productImage').files[0];
-    
-    // Input validation
-    if (!title || !price || !description) {
-        submitButton.textContent = originalButtonText;
-        submitButton.disabled = false;
-        showToast('Please fill out all required fields', 'error');
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('price', price);
-    formData.append('description', description);
-    
-    if (imageUrl) {
-        formData.append('imageUrl', imageUrl);
-    }
-    
-    if (productImage) {
-        // Validate image size and type
-        if (productImage.size > 5 * 1024 * 1024) {
-            submitButton.textContent = originalButtonText;
-            submitButton.disabled = false;
-            showToast('Image too large. Please select an image under 5MB.', 'error');
-            return;
-        }
-        
-        const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-        if (!validTypes.includes(productImage.type)) {
-            submitButton.textContent = originalButtonText;
-            submitButton.disabled = false;
-            showToast('Invalid file type. Please select a JPEG, PNG, WebP or GIF image.', 'error');
-            return;
-        }
-        
-        formData.append('image', productImage);
-    }
-    
     try {
+        const title = document.getElementById('title').value.trim();
+        const price = document.getElementById('price').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const productImage = document.getElementById('productImage').files[0];
+        
+        // Input validation
+        if (!title || !price || !description) {
+            submitButton.textContent = originalButtonText;
+            submitButton.disabled = false;
+            showToast('Please fill out all required fields', 'error');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('price', price);
+        formData.append('description', description);
+        
+        // Only append image if one is selected
+        if (productImage) {
+            // Validate image size and type
+            if (productImage.size > 5 * 1024 * 1024) {
+                submitButton.textContent = originalButtonText;
+                submitButton.disabled = false;
+                showToast('Image too large. Please select an image under 5MB.', 'error');
+                return;
+            }
+            
+            const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            if (!validTypes.includes(productImage.type)) {
+                submitButton.textContent = originalButtonText;
+                submitButton.disabled = false;
+                showToast('Invalid file type. Please select a JPEG, PNG, WebP or GIF image.', 'error');
+                return;
+            }
+            
+            formData.append('image', productImage);
+        }
+        
         console.log('Submitting product with data:', { 
             title, price, description, 
-            hasImage: !!productImage,
-            imageUrl
+            hasImage: !!productImage
         });
         
         let response;
@@ -188,7 +178,7 @@ const handleProductSubmit = async (e, productId = null) => {
     } catch (error) {
         console.error('Product submission error:', error);
         showToast(error.message || 'Failed to save product. Please try again.', 'error');
-    } finally {
+        
         submitButton.textContent = originalButtonText;
         submitButton.disabled = false;
     }
