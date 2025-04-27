@@ -44,35 +44,35 @@ export const renderProductsPage = async () => {
                     _id: 'sample1',
                     title: 'Sample Product 1',
                     price: '99.99',
-                    imageUrl: 'https://via.placeholder.com/300',
+                    imageUrl: './assets/product.png',
                     description: 'This is a sample product description'
                 },
                 {
                     _id: 'sample2',
                     title: 'Sample Product 2',
                     price: '149.99',
-                    imageUrl: 'https://via.placeholder.com/300',
+                    imageUrl: './assets/product.png',
                     description: 'Another sample product description'
                 },
                 {
                     _id: 'sample3',
                     title: 'Sample Product 3',
                     price: '79.99',
-                    imageUrl: 'https://via.placeholder.com/300',
+                    imageUrl: './assets/product.png',
                     description: 'Yet another sample product description'
                 },
                 {
                     _id: 'sample4',
                     title: 'Sample Product 4',
                     price: '129.99',
-                    imageUrl: 'https://via.placeholder.com/300',
+                    imageUrl: './assets/product.png',
                     description: 'A fourth sample product description'
                 },
                 {
                     _id: 'sample5',
                     title: 'Sample Product 5',
                     price: '199.99',
-                    imageUrl: 'https://via.placeholder.com/300',
+                    imageUrl: './assets/product.png',
                     description: 'A fifth sample product description'
                 }
             ];
@@ -108,7 +108,6 @@ export const renderProductsPage = async () => {
             </div>
         `;
         
-        // Add retry functionality
         document.querySelector('.retry').addEventListener('click', () => {
             renderProductsPage();
         });

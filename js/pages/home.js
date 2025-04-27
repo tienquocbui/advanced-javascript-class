@@ -39,21 +39,21 @@ export const renderHomePage = async () => {
                     _id: 'sample1',
                     title: 'Sample Product 1',
                     price: '99.99',
-                    imageUrl: 'https://via.placeholder.com/300',
+                    imageUrl: './assets/product.png',
                     description: 'This is a sample product description'
                 },
                 {
                     _id: 'sample2',
                     title: 'Sample Product 2',
                     price: '149.99',
-                    imageUrl: 'https://via.placeholder.com/300',
+                    imageUrl: './assets/product.png',
                     description: 'Another sample product description'
                 },
                 {
                     _id: 'sample3',
                     title: 'Sample Product 3',
                     price: '79.99',
-                    imageUrl: 'https://via.placeholder.com/300',
+                    imageUrl: './assets/product.png',
                     description: 'Yet another sample product description'
                 }
             ];

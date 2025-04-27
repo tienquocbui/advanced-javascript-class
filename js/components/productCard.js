@@ -1,6 +1,9 @@
 import { addToCart } from '../utils/cart.js';
 import { navigateTo } from '../utils/navigation.js';
 
+// Default product image path
+const DEFAULT_PRODUCT_IMAGE = './assets/product.png';
+
 /**
  * Create a product card element
  * @param {Object} product 
@@ -10,11 +13,11 @@ export const createProductCard = (product) => {
     const card = document.createElement('div');
     card.className = 'product-card';
     
-    const imageUrl = product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image';
+    const imageUrl = product.imageUrl || DEFAULT_PRODUCT_IMAGE;
     
     // Build card HTML
     card.innerHTML = `
-        <img class="product-image" src="${imageUrl}" alt="${product.title}">
+        <img class="product-image" src="${imageUrl}" alt="${product.title}" onerror="this.onerror=null; this.src='${DEFAULT_PRODUCT_IMAGE}';">
         <div class="product-info">
             <h3 class="product-title">${product.title}</h3>
             <div class="product-price">$${product.price}</div>
@@ -52,11 +55,11 @@ export const createProductCard = (product) => {
  * @returns {string} 
  */
 export const productCardTemplate = (product) => {
-    const imageUrl = product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image';
+    const imageUrl = product.imageUrl || DEFAULT_PRODUCT_IMAGE;
     
     return `
         <div class="product-card" data-id="${product._id}">
-            <img class="product-image" src="${imageUrl}" alt="${product.title}">
+            <img class="product-image" src="${imageUrl}" alt="${product.title}" onerror="this.onerror=null; this.src='${DEFAULT_PRODUCT_IMAGE}';">
             <div class="product-info">
                 <h3 class="product-title">${product.title}</h3>
                 <div class="product-price">$${product.price}</div>
