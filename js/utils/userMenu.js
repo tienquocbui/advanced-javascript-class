@@ -9,9 +9,11 @@ export const createUserDropdown = () => {
     let userDropdown = document.querySelector('.user-dropdown');
     if (!userDropdown) {
         userDropdown = document.createElement('div');
-        userDropdown.className = 'user-dropdown hidden';
+        userDropdown.className = 'user-dropdown';
         document.querySelector('.user-actions').appendChild(userDropdown);
     }
+    
+    userDropdown.classList.add('hidden');
     
     updateUserDropdown();
     
@@ -20,14 +22,12 @@ export const createUserDropdown = () => {
         userDropdown.classList.toggle('hidden');
     });
     
-    // Close dropdown when clicking elsewhere
     document.addEventListener('click', (e) => {
         if (!userDropdown.contains(e.target) && e.target !== userToggle) {
             userDropdown.classList.add('hidden');
         }
     });
     
-    // Listen for user status changes
     document.addEventListener('userLoggedIn', updateUserDropdown);
     document.addEventListener('userLoggedOut', updateUserDropdown);
     document.addEventListener('userUpdated', updateUserDropdown);
