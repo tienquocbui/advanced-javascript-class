@@ -88,7 +88,11 @@ export const renderHomePage = async () => {
         
         viewAllButton.querySelector('.view-all').addEventListener('click', () => {
             console.log('View All Products button clicked');
-            navigateTo('products');
+            if (window.location.href.includes('kelvinbui.netlify.app')) {
+                window.location.href = 'https://kelvinbui.netlify.app/products';
+            } else {
+                navigateTo('products');
+            }
         });
         
     } catch (error) {

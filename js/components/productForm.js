@@ -92,17 +92,27 @@ const handleProductSubmit = async (e, productId = null) => {
     submitButton.textContent = 'Processing...';
     submitButton.disabled = true;
     
-    const title = document.getElementById('title').value;
-    const price = document.getElementById('price').value;
-    const description = document.getElementById('description').value;
+    const title = document.getElementById('title').value.trim();
+    const price = document.getElementById('price').value.trim();
+    const description = document.getElementById('description').value.trim();
     const productImage = document.getElementById('productImage').files[0];
     
+    // Input validation
+    if (!title || !price || !description) {
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
+        showToast('Please fill out all required fields', 'error');
+        return;
+    }
+    
+    // Create FormData object for file upload
     const formData = new FormData();
     formData.append('title', title);
     formData.append('price', price);
     formData.append('description', description);
     
     if (productImage) {
+        // Validate image size and type
         if (productImage.size > 5 * 1024 * 1024) {
             submitButton.textContent = originalButtonText;
             submitButton.disabled = false;
@@ -122,20 +132,29 @@ const handleProductSubmit = async (e, productId = null) => {
     }
     
     try {
+        console.log('Submitting product with data:', { 
+            title, price, description, 
+            hasImage: !!productImage 
+        });
+        
         let response;
         if (productId) {
+            // Update existing product
             formData.append('productId', productId);
             response = await productsAPI.updateProduct(productId, formData);
             showToast('Product updated successfully!', 'success');
         } else {
+            // Create new product
             response = await productsAPI.createProduct(formData);
             showToast('Product created successfully!', 'success');
         }
         
         closeModal();
         
+        // Refresh the page to show the new product
         navigateTo('products');
         
+        // Dispatch event to notify that a product was created or updated
         document.dispatchEvent(new CustomEvent('productUpdated', {
             detail: response.product
         }));

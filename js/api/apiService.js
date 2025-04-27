@@ -89,16 +89,22 @@ const uploadRequest = async (endpoint, formData, requiresAuth = true, method = '
         headers['Authorization'] = `Bearer ${token}`;
     }
     
+    // Don't add Content-Type header - let the browser set it with the boundary
+    // for multipart/form-data requests
+    
     // Setup request options
     const options = {
         method,
         headers,
         body: formData,
-        credentials: 'omit'
+        credentials: 'omit',
+        mode: 'cors'
     };
     
     try {
         console.log(`Making ${method} upload request to:`, url);
+        console.log('Form data contents:', Array.from(formData.entries()));
+        
         const response = await fetch(url, options);
         
         let responseData;
