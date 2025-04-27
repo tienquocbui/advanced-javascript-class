@@ -246,7 +246,7 @@ export const renderProfilePage = async () => {
                                     <div class="order-status status-${order.status || 'pending'}">${order.status || 'Pending'}</div>
                                 </div>
                                 <div class="order-summary">
-                                    <div class="order-total">$${parseFloat(order.totalAmount).toFixed(2)}</div>
+                                    <div class="order-total">${formatCurrency(order.totalAmount)}</div>
                                     <div class="order-items-count">${order.items.length} item${order.items.length !== 1 ? 's' : ''}</div>
                                 </div>
                             </div>
