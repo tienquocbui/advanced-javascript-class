@@ -4,23 +4,13 @@ import { updateUserInterface } from '../app.js';
 import { renderLoginModal, renderSignupModal, renderAccountModal } from '../components/authModals.js';
 
 export const initAuth = () => {
-    const userToggle = document.getElementById('user-toggle');
-    
-    userToggle.addEventListener('click', () => {
-        const token = localStorage.getItem('token');
-        
-        if (token) {
-            renderAccountModal();
-        } else {
-            renderLoginModal();
-        }
-    });
-    
+    // Register event listeners for auth events
     document.addEventListener('login', handleLogin);
     document.addEventListener('signup', handleSignup);
     document.addEventListener('logout', handleLogout);
     document.addEventListener('showSignup', () => renderSignupModal());
     document.addEventListener('showLogin', () => renderLoginModal());
+    document.addEventListener('showProfile', () => renderAccountModal());
 };
 
 const handleLogin = async (event) => {
