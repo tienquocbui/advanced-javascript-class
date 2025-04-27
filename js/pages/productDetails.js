@@ -3,7 +3,8 @@ import { navigateTo } from '../utils/navigation.js';
 import { addToCart } from '../utils/cart.js';
 import { showToast } from '../utils/toast.js';
 
-const DEFAULT_PRODUCT_IMAGE = '../assets/product.png';
+// Use an absolute path for the default product image
+const DEFAULT_PRODUCT_IMAGE = '/assets/product.png';
 
 /**
  * Get a proper image URL or return default if empty

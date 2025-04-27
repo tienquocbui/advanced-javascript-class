@@ -74,7 +74,7 @@ export const renderHomePage = async () => {
                 </div>
             `;
         } else {
-            const DEFAULT_PRODUCT_IMAGE = '../assets/product.png';
+            const DEFAULT_PRODUCT_IMAGE = '/assets/product.png';
             
             featuredProducts.forEach(product => {
                 const card = document.createElement('div');

@@ -7,6 +7,8 @@ const showModal = (title, content) => {
     const modalContainer = document.getElementById('modal-container');
     const modalBackdrop = document.getElementById('modal-backdrop');
     
+    modalContainer.classList.add('apple-style');
+    
     modalContainer.innerHTML = `
         <div class="modal-header">
             <h2 class="modal-title">${title}</h2>
@@ -32,6 +34,8 @@ const closeModal = () => {
     
     modalContainer.classList.add('hidden');
     modalBackdrop.classList.add('hidden');
+    
+    modalContainer.classList.remove('apple-style');
 };
 
 export const renderProductForm = (product = null) => {
@@ -55,34 +59,44 @@ export const renderProductForm = (product = null) => {
     const title = isEdit ? 'Edit Product' : 'Create New Product';
     
     const content = `
-        <form id="product-form">
-            <div class="form-group">
-                <label for="title" class="form-label">Product Title</label>
-                <input type="text" id="title" class="form-input" value="${isEdit ? product.title : ''}" required>
-            </div>
-            <div class="form-group">
-                <label for="price" class="form-label">Price</label>
-                <input type="number" id="price" class="form-input" step="0.01" min="0" value="${isEdit ? product.price : ''}" required>
-            </div>
-            <div class="form-group">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" class="form-input" rows="4" required>${isEdit ? product.description : ''}</textarea>
-            </div>
-            <div class="form-group">
-                <label for="imageUrl" class="form-label">Image URL (Optional)</label>
-                <input type="text" id="imageUrl" class="form-input" value="${isEdit ? product.imageUrl : 'https://postimg.cc/BjSDrq9k'}" placeholder="Enter image URL or use default">
-                <small class="form-help">You can use the default Postimg URL or upload your own image below</small>
-            </div>
-            <div class="form-group">
-                <label for="productImage" class="form-label">Upload Product Image (Optional)</label>
-                <input type="file" id="productImage" class="form-input" accept="image/*">
-                ${displayImageUrl ? `<div class="current-image"><img src="${displayImageUrl}" alt="${product?.title || 'Product'}" style="max-width: 100px; margin-top: 10px;"></div>` : ''}
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">${isEdit ? 'Update Product' : 'Create Product'}</button>
-                <button type="button" id="cancel-btn" class="btn btn-secondary">Cancel</button>
-            </div>
-        </form>
+        <div class="auth-container">
+            <form id="product-form">
+                <div class="form-group">
+                    <label for="title" class="form-label">Product Title</label>
+                    <input type="text" id="title" class="apple-input" value="${isEdit ? product.title : ''}" required placeholder="Enter product title">
+                </div>
+                
+                <div class="form-group">
+                    <label for="price" class="form-label">Price ($)</label>
+                    <input type="number" id="price" class="apple-input" step="0.01" min="0" value="${isEdit ? product.price : ''}" required placeholder="0.00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea id="description" class="apple-input" rows="4" required placeholder="Enter product description">${isEdit ? product.description : ''}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imageUrl" class="form-label">Image URL (Optional)</label>
+                    <input type="text" id="imageUrl" class="apple-input" value="${isEdit ? product.imageUrl : 'https://postimg.cc/BjSDrq9k'}" placeholder="Enter image URL or use default">
+                    <small class="form-help">You can use the default Postimg URL or upload your own image below</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productImage" class="form-label">Upload Product Image (Optional)</label>
+                    <input type="file" id="productImage" class="apple-input" accept="image/*" style="padding-top: 10px;">
+                    ${displayImageUrl ? `
+                    <div class="current-image">
+                        <img src="${displayImageUrl}" alt="${product?.title || 'Product'}" style="max-width: 100px; margin-top: 10px; border-radius: 8px;">
+                    </div>` : ''}
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="apple-button">${isEdit ? 'Update Product' : 'Create Product'}</button>
+                    <button type="button" id="cancel-btn" class="btn btn-secondary" style="margin-top: 10px; width: 100%; background: rgba(60, 60, 67, 0.2);">Cancel</button>
+                </div>
+            </form>
+        </div>
     `;
     
     showModal(title, content);
@@ -116,7 +130,6 @@ const handleProductSubmit = async (e, productId = null) => {
         return;
     }
     
-    // Create FormData object for file upload
     const formData = new FormData();
     formData.append('title', title);
     formData.append('price', price);

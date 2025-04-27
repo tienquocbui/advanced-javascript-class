@@ -4,7 +4,7 @@ import { renderProductForm } from '../components/productForm.js';
 import { isLoggedIn, getCurrentUser } from '../utils/auth.js';
 import { showToast } from '../utils/toast.js';
 
-const DEFAULT_PRODUCT_IMAGE = '../assets/product.png';
+const DEFAULT_PRODUCT_IMAGE = '/assets/product.png';
 
 export const renderProductsPage = async () => {
     const pageContainer = document.getElementById('page-container');

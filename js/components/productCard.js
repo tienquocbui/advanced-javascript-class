@@ -1,7 +1,7 @@
 import { addToCart } from '../utils/cart.js';
 import { navigateTo } from '../utils/navigation.js';
 
-const DEFAULT_PRODUCT_IMAGE = '../assets/product.png';
+const DEFAULT_PRODUCT_IMAGE = '/assets/product.png';
 
 /**
  * Get a proper image URL or return default if empty
