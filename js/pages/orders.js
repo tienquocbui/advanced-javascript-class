@@ -2,6 +2,7 @@ import { ordersAPI } from '../api/apiService.js';
 import { navigateTo } from '../utils/navigation.js';
 import { showToast } from '../utils/toast.js';
 import { isLoggedIn } from '../utils/auth.js';
+import { formatCurrency } from '../utils/formatter.js';
 
 export const renderOrdersPage = async () => {
     const pageContainer = document.getElementById('page-container');
@@ -93,7 +94,7 @@ const renderOrderItem = (order) => {
                     <div class="order-status ${statusClass}">${order.status}</div>
                 </div>
                 <div class="order-summary">
-                    <div class="order-total">$${order.totalAmount.toFixed(2)}</div>
+                    <div class="order-total">${formatCurrency(order.totalAmount)}</div>
                     <div class="order-items-count">${totalItems} item${totalItems !== 1 ? 's' : ''}</div>
                 </div>
             </div>
@@ -106,9 +107,9 @@ const renderOrderItem = (order) => {
                             <img class="product-image" src="${item.product.imageUrl || 'https://via.placeholder.com/60x60?text=No+Image'}" alt="${item.product.title}">
                             <div class="product-details">
                                 <div class="product-title">${item.product.title}</div>
-                                <div class="product-price">$${item.product.price} x ${item.quantity}</div>
+                                <div class="product-price">${formatCurrency(item.product.price)} x ${item.quantity}</div>
                             </div>
-                            <div class="product-total">$${(parseFloat(item.product.price) * item.quantity).toFixed(2)}</div>
+                            <div class="product-total">${formatCurrency(parseFloat(item.product.price) * item.quantity)}</div>
                         </div>
                     `).join('')}
                 </div>
@@ -116,15 +117,15 @@ const renderOrderItem = (order) => {
                 <div class="order-summary-details">
                     <div class="summary-detail">
                         <span>Subtotal:</span>
-                        <span>$${order.totalAmount.toFixed(2)}</span>
+                        <span>${formatCurrency(order.totalAmount)}</span>
                     </div>
                     <div class="summary-detail">
                         <span>Shipping:</span>
-                        <span>${order.totalAmount >= 50 ? 'Free' : '$10.00'}</span>
+                        <span>${order.totalAmount >= 50 ? 'Free' : formatCurrency(10)}</span>
                     </div>
                     <div class="summary-detail total">
                         <span>Total:</span>
-                        <span>$${order.totalAmount.toFixed(2)}</span>
+                        <span>${formatCurrency(order.totalAmount)}</span>
                     </div>
                 </div>
             </div>

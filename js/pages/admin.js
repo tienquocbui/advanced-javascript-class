@@ -2,6 +2,7 @@ import { productsAPI, ordersAPI } from '../api/apiService.js';
 import { isLoggedIn, getCurrentUser } from '../utils/auth.js';
 import { navigateTo } from '../utils/navigation.js';
 import { showToast } from '../utils/toast.js';
+import { formatCurrency } from '../utils/formatter.js';
 
 export const renderAdminPage = async () => {
     const pageContainer = document.getElementById('page-container');
@@ -136,7 +137,7 @@ const loadProducts = async () => {
                         <tr data-id="${product._id}">
                             <td><img src="${product.imageUrl || 'https://via.placeholder.com/50x50?text=No+Image'}" alt="${product.title}" class="product-thumbnail"></td>
                             <td>${product.title}</td>
-                            <td>$${product.price}</td>
+                            <td>${formatCurrency(product.price)}</td>
                             <td>
                                 <button class="btn btn-sm btn-secondary edit-product">Edit</button>
                                 <button class="btn btn-sm btn-danger delete-product">Delete</button>
@@ -418,8 +419,8 @@ const showOrderDetails = (order) => {
                 <thead>
                     <tr>
                         <th>Product</th>
-                        <th>Price</th>
                         <th>Quantity</th>
+                        <th>Price</th>
                         <th>Total</th>
                     </tr>
                 </thead>
@@ -427,9 +428,9 @@ const showOrderDetails = (order) => {
                     ${order.products.map(item => `
                         <tr>
                             <td>${item.product.title}</td>
-                            <td>$${item.product.price}</td>
                             <td>${item.quantity}</td>
-                            <td>$${(parseFloat(item.product.price) * item.quantity).toFixed(2)}</td>
+                            <td>${formatCurrency(item.product.price)}</td>
+                            <td>${formatCurrency(parseFloat(item.product.price) * item.quantity)}</td>
                         </tr>
                     `).join('')}
                 </tbody>

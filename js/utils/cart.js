@@ -1,4 +1,5 @@
 import { showToast } from './toast.js';
+import { formatCurrency } from './formatter.js';
 
 let cart = [];
 let cartDropdownVisible = false;
@@ -99,7 +100,7 @@ export const updateCartItemQuantity = (productId, quantity) => {
 export const getCartTotal = () => {
     return cart.reduce((total, item) => {
         return total + (parseFloat(item.product.price) * item.quantity);
-    }, 0).toFixed(2);
+    }, 0);
 };
 
 export const getCart = () => {
@@ -189,7 +190,7 @@ const renderCartDropdown = () => {
                 <img class="cart-item-image" src="${item.product.imageUrl}" alt="${item.product.title}">
                 <div class="cart-item-details">
                     <div class="cart-item-title">${item.product.title}</div>
-                    <div class="cart-item-price">$${item.product.price}</div>
+                    <div class="cart-item-price">${formatCurrency(item.product.price)}</div>
                 </div>
                 <div class="cart-item-actions">
                     <button class="quantity-decrease">-</button>
@@ -208,7 +209,7 @@ const renderCartDropdown = () => {
             </div>
             <div class="cart-total">
                 <span>Total:</span>
-                <span>$${total}</span>
+                <span>${formatCurrency(total)}</span>
             </div>
             <div class="cart-buttons">
                 <button class="btn btn-secondary clear-cart">Clear Cart</button>

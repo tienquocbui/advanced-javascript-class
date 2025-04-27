@@ -3,6 +3,7 @@ import { isLoggedIn, getCurrentUser } from '../utils/auth.js';
 import { navigateTo } from '../utils/navigation.js';
 import { ordersAPI } from '../api/apiService.js';
 import { showToast } from '../utils/toast.js';
+import { formatCurrency } from '../utils/formatter.js';
 
 export const renderCheckoutPage = () => {
     const pageContainer = document.getElementById('page-container');
@@ -133,9 +134,9 @@ export const renderCheckoutPage = () => {
                                 <img class="cart-item-image" src="${item.product.imageUrl || 'https://via.placeholder.com/60x60?text=No+Image'}" alt="${item.product.title}">
                                 <div class="cart-item-details">
                                     <div class="cart-item-title">${item.product.title}</div>
-                                    <div class="cart-item-price">$${item.product.price} x ${item.quantity}</div>
+                                    <div class="cart-item-price">${formatCurrency(item.product.price)} x ${item.quantity}</div>
                                 </div>
-                                <div class="cart-item-total">$${(parseFloat(item.product.price) * item.quantity).toFixed(2)}</div>
+                                <div class="cart-item-total">${formatCurrency(parseFloat(item.product.price) * item.quantity)}</div>
                             </div>
                         `).join('')}
                     </div>
@@ -143,15 +144,15 @@ export const renderCheckoutPage = () => {
                     <div class="order-summary">
                         <div class="summary-row">
                             <span>Subtotal</span>
-                            <span>$${subtotal}</span>
+                            <span>${formatCurrency(subtotal)}</span>
                         </div>
                         <div class="summary-row">
                             <span>Shipping</span>
-                            <span>${shipping === 0 ? 'Free' : '$' + shipping.toFixed(2)}</span>
+                            <span>${shipping === 0 ? 'Free' : formatCurrency(shipping)}</span>
                         </div>
                         <div class="summary-row total">
                             <span>Total</span>
-                            <span>$${total}</span>
+                            <span>${formatCurrency(total)}</span>
                         </div>
                     </div>
                     
@@ -241,7 +242,7 @@ const displayOrderConfirmation = (order) => {
                 </div>
                 <div class="detail-row">
                     <span>Total:</span>
-                    <span>$${order.totalAmount.toFixed(2)}</span>
+                    <span>${formatCurrency(order.totalAmount)}</span>
                 </div>
                 <div class="detail-row">
                     <span>Status:</span>

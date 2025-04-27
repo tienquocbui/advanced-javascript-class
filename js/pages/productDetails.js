@@ -2,6 +2,7 @@ import { productsAPI } from '../api/apiService.js';
 import { navigateTo } from '../utils/navigation.js';
 import { addToCart } from '../utils/cart.js';
 import { showToast } from '../utils/toast.js';
+import { formatCurrency } from '../utils/formatter.js';
 
 // Use an absolute path for the default product image
 const DEFAULT_PRODUCT_IMAGE = '/assets/product.png';
@@ -68,7 +69,7 @@ export const renderProductDetail = async (params) => {
                     
                     <div class="product-detail-info">
                         <h1 class="product-detail-title">${product.title}</h1>
-                        <div class="product-detail-price">$${product.price}</div>
+                        <div class="product-detail-price">${formatCurrency(product.price)}</div>
                         <div class="product-detail-description">${product.description}</div>
                         
                         <div class="product-detail-quantity">

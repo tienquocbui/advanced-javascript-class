@@ -2,6 +2,8 @@ import { productsAPI } from '../api/apiService.js';
 import { createProductCard } from '../components/productCard.js';
 import { navigateTo } from '../utils/navigation.js';
 import { showToast } from '../utils/toast.js';
+import { addToCart } from '../utils/cart.js';
+import { formatCurrency } from '../utils/formatter.js';
 
 export const renderHomePage = async () => {
     const pageContainer = document.getElementById('page-container');
@@ -88,13 +90,13 @@ export const renderHomePage = async () => {
                         <img src="${imageUrl}" alt="${product.title}" class="product-image" 
                              onerror="this.onerror=null; this.src='${DEFAULT_PRODUCT_IMAGE}';">
                     </div>
-                    <div class="product-info">
+                    <div class="featured-product-info">
                         <h3 class="product-title">${product.title}</h3>
-                        <div class="product-price">$${product.price}</div>
+                        <div class="product-price">${formatCurrency(product.price)}</div>
                         <p class="product-description">${product.description}</p>
                         <div class="product-actions">
-                            <button class="btn btn-primary add-to-cart">Add to Cart</button>
-                            <button class="btn btn-secondary view-details">Details</button>
+                            <button class="btn btn-primary add-to-cart-btn" data-product-id="${product._id}">Add to Cart</button>
+                            <button class="btn btn-secondary view-details-btn" data-product-id="${product._id}">View Details</button>
                         </div>
                     </div>
                 `;
@@ -118,14 +120,14 @@ export const renderHomePage = async () => {
             
             if (!product) return;
             
-            const addToCartBtn = card.querySelector('.add-to-cart');
+            const addToCartBtn = card.querySelector('.add-to-cart-btn');
             addToCartBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 addToCart(product);
                 showToast(`${product.title} added to cart!`, 'success');
             });
             
-            const viewDetailsBtn = card.querySelector('.view-details');
+            const viewDetailsBtn = card.querySelector('.view-details-btn');
             viewDetailsBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 navigateTo('product', { id: product._id });

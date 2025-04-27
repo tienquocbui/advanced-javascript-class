@@ -1,5 +1,6 @@
 import { addToCart } from '../utils/cart.js';
 import { navigateTo } from '../utils/navigation.js';
+import { formatCurrency } from '../utils/formatter.js';
 
 const DEFAULT_PRODUCT_IMAGE = '/assets/product.png';
 
@@ -36,7 +37,7 @@ export const createProductCard = (product) => {
         <img class="product-image" src="${imageUrl}" alt="${product.title}" onerror="this.onerror=null; this.src='${DEFAULT_PRODUCT_IMAGE}';">
         <div class="product-info">
             <h3 class="product-title">${product.title}</h3>
-            <div class="product-price">$${product.price}</div>
+            <div class="product-price">${formatCurrency(product.price)}</div>
             <p class="product-description">${product.description}</p>
             <div class="product-actions">
                 <button class="btn btn-primary add-to-cart">Add to Cart</button>
@@ -78,7 +79,7 @@ export const productCardTemplate = (product) => {
             <img class="product-image" src="${imageUrl}" alt="${product.title}" onerror="this.onerror=null; this.src='${DEFAULT_PRODUCT_IMAGE}';">
             <div class="product-info">
                 <h3 class="product-title">${product.title}</h3>
-                <div class="product-price">$${product.price}</div>
+                <div class="product-price">${formatCurrency(product.price)}</div>
                 <p class="product-description">${product.description}</p>
                 <div class="product-actions">
                     <button class="btn btn-primary add-to-cart">Add to Cart</button>
