@@ -32,13 +32,7 @@ const init = async () => {
 const updateUserInterface = (isLoggedIn, userData = null) => {
     const userToggle = document.getElementById('user-toggle');
     
-    if (isLoggedIn && userData) {
-        userToggle.innerHTML = userData.imageUrl 
-            ? `<img src="${userData.imageUrl}" alt="${userData.firstName}" class="user-avatar-small">` 
-            : `<span class="user-initial">${userData.firstName.charAt(0)}</span>`;
-    } else {
-        userToggle.innerHTML = '<i class="fas fa-user"></i>';
-    }
+    userToggle.innerHTML = '<i class="fas fa-user"></i>';
 };
 
 document.addEventListener('DOMContentLoaded', init);

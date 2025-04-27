@@ -157,9 +157,21 @@ header .container {
 }
 
 .user-actions button {
-    margin-left: 20px;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    margin-left: 15px;
+    padding: 5px;
+    cursor: pointer;
     position: relative;
-    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-actions button:hover {
+    color: var(--accent);
 }
 
 #cart-count {
@@ -565,24 +577,21 @@ main {
 /* Style for user toggle button */
 #user-toggle {
     position: relative;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 8px;
     border-radius: 50%;
-    overflow: hidden;
-    background-color: var(--secondary-dark);
+    background-color: transparent;
     transition: all 0.2s ease;
 }
 
 #user-toggle:hover {
-    background-color: var(--accent);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 #user-toggle i {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 /* Responsive Styles */
