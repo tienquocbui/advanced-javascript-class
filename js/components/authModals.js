@@ -46,7 +46,7 @@ export const renderLoginModal = () => {
                     </div>
                     <button type="submit" class="btn btn-primary apple-button">Login</button>
                     <div class="auth-links">
-                        <a href="#" class="forgot-password">Forgot password?</a>
+                        <a href="#" class="forgot-password" id="forgot-password">Forgot password?</a>
                     </div>
                     <div class="auth-divider">
                         <span>or</span>
@@ -63,11 +63,17 @@ export const renderLoginModal = () => {
     
     const loginForm = document.getElementById('login-form');
     const showSignupLink = document.getElementById('show-signup');
+    const forgotPasswordLink = document.getElementById('forgot-password');
     
     loginForm.addEventListener('submit', handleLoginSubmit);
     showSignupLink.addEventListener('click', (e) => {
         e.preventDefault();
         renderSignupModal();
+    });
+    
+    forgotPasswordLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        showToast("Well you need to create a new account, I don't remember your password too ^^. I will learn more how to implement that!", 'info', 8000);
     });
 };
 
@@ -146,41 +152,47 @@ export const renderAccountModal = () => {
     }
     
     const content = `
-        <form id="profile-form">
-            <div class="user-profile-header">
-                <div class="user-avatar large">
-                    ${user.imageUrl 
-                        ? `<img src="${user.imageUrl}" alt="${user.firstName}">` 
-                        : `<span>${user.firstName.charAt(0)}</span>`
-                    }
-                </div>
-                <div>
-                    <h3>${user.firstName} ${user.lastName}</h3>
-                    <p>${user.email}</p>
-                    <p><small>Role: ${user.role || 'Customer'}</small></p>
-                </div>
+        <div class="auth-modal apple-style">
+            <button class="modal-close">&times;</button>
+            <div class="auth-container">
+                <h2>My Account</h2>
+                <form id="profile-form">
+                    <div class="user-profile-header">
+                        <div class="user-avatar large">
+                            ${user.imageUrl 
+                                ? `<img src="${user.imageUrl}" alt="${user.firstName}">` 
+                                : `<span>${user.firstName.charAt(0)}</span>`
+                            }
+                        </div>
+                        <div>
+                            <h3>${user.firstName} ${user.lastName}</h3>
+                            <p>${user.email}</p>
+                            <p><small>Role: ${user.role || 'Customer'}</small></p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="updateFirstName" class="form-label">First Name</label>
+                        <input type="text" id="updateFirstName" class="form-input apple-input" value="${user.firstName}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="updateLastName" class="form-label">Last Name</label>
+                        <input type="text" id="updateLastName" class="form-input apple-input" value="${user.lastName}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="profileImage" class="form-label">Profile Image</label>
+                        <input type="file" id="profileImage" class="form-input apple-input" accept="image/*">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary apple-button">Update Profile</button>
+                        <button type="button" id="logout-btn" class="btn btn-secondary">Logout</button>
+                    </div>
+                </form>
             </div>
-            
-            <div class="form-group">
-                <label for="updateFirstName" class="form-label">First Name</label>
-                <input type="text" id="updateFirstName" class="form-input" value="${user.firstName}" required>
-            </div>
-            <div class="form-group">
-                <label for="updateLastName" class="form-label">Last Name</label>
-                <input type="text" id="updateLastName" class="form-input" value="${user.lastName}" required>
-            </div>
-            <div class="form-group">
-                <label for="profileImage" class="form-label">Profile Image</label>
-                <input type="file" id="profileImage" class="form-input" accept="image/*">
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Update Profile</button>
-                <button type="button" id="logout-btn" class="btn btn-secondary">Logout</button>
-            </div>
-        </form>
+        </div>
     `;
     
-    showModal('My Account', content);
+    showAuthModal(content);
     
     const profileForm = document.getElementById('profile-form');
     const logoutButton = document.getElementById('logout-btn');
