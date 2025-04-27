@@ -46,6 +46,11 @@ export const renderProductForm = (product = null) => {
         return;
     }
     
+    let displayImageUrl = product?.imageUrl || '';
+    if (displayImageUrl.includes('postimg.cc')) {
+        displayImageUrl = 'https://i.postimg.cc/BjSDrq9k/temp-Image-ki7-Rwh.jpg';
+    }
+    
     const isEdit = !!product;
     const title = isEdit ? 'Edit Product' : 'Create New Product';
     
@@ -64,9 +69,14 @@ export const renderProductForm = (product = null) => {
                 <textarea id="description" class="form-input" rows="4" required>${isEdit ? product.description : ''}</textarea>
             </div>
             <div class="form-group">
-                <label for="productImage" class="form-label">Product Image</label>
+                <label for="imageUrl" class="form-label">Image URL (Optional)</label>
+                <input type="text" id="imageUrl" class="form-input" value="${isEdit ? product.imageUrl : 'https://postimg.cc/BjSDrq9k'}" placeholder="Enter image URL or use default">
+                <small class="form-help">You can use the default Postimg URL or upload your own image below</small>
+            </div>
+            <div class="form-group">
+                <label for="productImage" class="form-label">Upload Product Image (Optional)</label>
                 <input type="file" id="productImage" class="form-input" accept="image/*">
-                ${isEdit && product.imageUrl ? `<div class="current-image"><img src="${product.imageUrl}" alt="${product.title}" style="max-width: 100px; margin-top: 10px;"></div>` : ''}
+                ${displayImageUrl ? `<div class="current-image"><img src="${displayImageUrl}" alt="${product?.title || 'Product'}" style="max-width: 100px; margin-top: 10px;"></div>` : ''}
             </div>
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">${isEdit ? 'Update Product' : 'Create Product'}</button>
@@ -95,6 +105,7 @@ const handleProductSubmit = async (e, productId = null) => {
     const title = document.getElementById('title').value.trim();
     const price = document.getElementById('price').value.trim();
     const description = document.getElementById('description').value.trim();
+    const imageUrl = document.getElementById('imageUrl').value.trim();
     const productImage = document.getElementById('productImage').files[0];
     
     // Input validation
@@ -110,6 +121,10 @@ const handleProductSubmit = async (e, productId = null) => {
     formData.append('title', title);
     formData.append('price', price);
     formData.append('description', description);
+    
+    if (imageUrl) {
+        formData.append('imageUrl', imageUrl);
+    }
     
     if (productImage) {
         // Validate image size and type
@@ -134,7 +149,8 @@ const handleProductSubmit = async (e, productId = null) => {
     try {
         console.log('Submitting product with data:', { 
             title, price, description, 
-            hasImage: !!productImage 
+            hasImage: !!productImage,
+            imageUrl
         });
         
         let response;
@@ -151,10 +167,8 @@ const handleProductSubmit = async (e, productId = null) => {
         
         closeModal();
         
-        // Refresh the page to show the new product
         navigateTo('products');
         
-        // Dispatch event to notify that a product was created or updated
         document.dispatchEvent(new CustomEvent('productUpdated', {
             detail: response.product
         }));

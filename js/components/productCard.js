@@ -4,6 +4,16 @@ import { navigateTo } from '../utils/navigation.js';
 // Default product image path
 const DEFAULT_PRODUCT_IMAGE = './assets/product.png';
 
+const getProperImageUrl = (url) => {
+    if (!url) return DEFAULT_PRODUCT_IMAGE;
+    
+    if (url.includes('postimg.cc') && !url.includes('.jpg') && !url.includes('.png')) {
+        return 'https://i.postimg.cc/BjSDrq9k/temp-Image-ki7-Rwh.jpg';
+    }
+    
+    return url;
+};
+
 /**
  * Create a product card element
  * @param {Object} product 
@@ -13,7 +23,7 @@ export const createProductCard = (product) => {
     const card = document.createElement('div');
     card.className = 'product-card';
     
-    const imageUrl = product.imageUrl || DEFAULT_PRODUCT_IMAGE;
+    const imageUrl = getProperImageUrl(product.imageUrl);
     
     // Build card HTML
     card.innerHTML = `
@@ -55,7 +65,7 @@ export const createProductCard = (product) => {
  * @returns {string} 
  */
 export const productCardTemplate = (product) => {
-    const imageUrl = product.imageUrl || DEFAULT_PRODUCT_IMAGE;
+    const imageUrl = getProperImageUrl(product.imageUrl);
     
     return `
         <div class="product-card" data-id="${product._id}">
