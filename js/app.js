@@ -11,7 +11,11 @@ const init = async () => {
     initToast();
     initNavigation();
     initSearchBar();
-    initUserMenu();
+    
+    setTimeout(() => {
+        initUserMenu();
+        console.log('User menu initialized');
+    }, 100);
     
     const token = localStorage.getItem('token');
     if (token) {
@@ -31,8 +35,9 @@ const init = async () => {
 
 const updateUserInterface = (isLoggedIn, userData = null) => {
     const userToggle = document.getElementById('user-toggle');
-    
-    userToggle.innerHTML = '<i class="fas fa-user"></i>';
+    if (userToggle) {
+        userToggle.innerHTML = '<i class="fas fa-user"></i>';
+    }
 };
 
 document.addEventListener('DOMContentLoaded', init);

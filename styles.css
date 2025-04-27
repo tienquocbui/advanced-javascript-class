@@ -90,6 +90,15 @@ button:focus {
     display: none !important;
 }
 
+/* User Dropdown - more specific class to override .hidden */
+.user-dropdown.hidden {
+    display: block !important;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.9);
+    pointer-events: none;
+}
+
 /* Header Styles */
 header {
     background-color: var(--primary-dark);

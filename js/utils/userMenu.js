@@ -3,54 +3,51 @@ import { renderProductForm } from '../components/productForm.js';
 import { showToast } from './toast.js';
 import { navigateTo } from './navigation.js';
 
-const closeOpenModal = () => {
-    const modalContainer = document.getElementById('modal-container');
-    const modalBackdrop = document.getElementById('modal-backdrop');
-    
-    if (modalContainer && !modalContainer.classList.contains('hidden')) {
-        modalContainer.classList.add('hidden');
-        modalBackdrop.classList.add('hidden');
-    }
-};
-
 export const createUserDropdown = () => {
+    console.log("Creating user dropdown");
     const userToggle = document.getElementById('user-toggle');
-    
-    let userDropdown = document.querySelector('.user-dropdown');
-    if (!userDropdown) {
-        userDropdown = document.createElement('div');
-        userDropdown.className = 'user-dropdown';
-        document.querySelector('.user-actions').appendChild(userDropdown);
+    if (!userToggle) {
+        console.error('User toggle button not found');
+        return;
     }
     
-    userDropdown.classList.add('hidden');
+    // First, remove any existing dropdown to avoid duplicates
+    const existingDropdown = document.querySelector('.user-dropdown');
+    if (existingDropdown) {
+        existingDropdown.remove();
+    }
     
+    // Create a fresh dropdown
+    const userDropdown = document.createElement('div');
+    userDropdown.className = 'user-dropdown hidden';
+    document.querySelector('.user-actions').appendChild(userDropdown);
+    
+    // Update the dropdown content
     updateUserDropdown();
     
+    // Add the click event handler
     userToggle.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        closeOpenModal();
+        console.log('Toggle clicked, current state:', userDropdown.classList.contains('hidden'));
         userDropdown.classList.toggle('hidden');
+        console.log('After toggle, new state:', userDropdown.classList.contains('hidden'));
     });
     
+    // Close dropdown when clicking elsewhere
     document.addEventListener('click', (e) => {
         if (!userDropdown.contains(e.target) && e.target !== userToggle) {
             userDropdown.classList.add('hidden');
         }
     });
-    
-    document.addEventListener('modalOpened', () => {
-        userDropdown.classList.add('hidden');
-    });
-    
-    document.addEventListener('userLoggedIn', updateUserDropdown);
-    document.addEventListener('userLoggedOut', updateUserDropdown);
-    document.addEventListener('userUpdated', updateUserDropdown);
 };
 
 const updateUserDropdown = () => {
     const userDropdown = document.querySelector('.user-dropdown');
-    if (!userDropdown) return;
+    if (!userDropdown) {
+        console.error('User dropdown element not found');
+        return;
+    }
     
     if (isLoggedIn()) {
         const user = getCurrentUser();
