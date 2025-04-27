@@ -7,6 +7,7 @@ import { renderProfilePage } from '../pages/profile.js';
 import { renderOrdersPage } from '../pages/orders.js';
 import { renderAdminPage } from '../pages/admin.js';
 import { isLoggedIn, getCurrentUser } from './auth.js';
+import { initUserMenu } from './userMenu.js';
 
 let currentPage = 'home';
 
@@ -94,81 +95,51 @@ const handleRouteChange = () => {
  * @param {object} params
  */
 export const navigateTo = (page, params = {}) => {
-    const cartDropdown = document.querySelector('.cart-dropdown');
-    if (cartDropdown) {
-        cartDropdown.style.display = 'none';
-    }
-    
-    const userDropdown = document.querySelector('.user-dropdown');
-    if (userDropdown) {
-        userDropdown.style.display = 'none';
-    }
-    
-    if (
-        (page === 'profile' || page === 'orders' || page === 'admin') && 
-        !isLoggedIn()
-    ) {
-        document.dispatchEvent(new CustomEvent('showLogin'));
+    if (!validRoutes.includes(page)) {
+        renderNotFoundPage();
         return;
     }
     
-    if (page === 'admin') {
-        const user = getCurrentUser();
-        if (!user || user.role !== 'admin') {
-            import('./toast.js').then(({ showToast }) => {
-                showToast('Access denied. Admin privileges required.', 'error');
-            });
-            navigateTo('home');
-            return;
-        }
-    }
-    
-    let newPath;
-    if (page === 'home') {
-        newPath = '/';
-    } else if (page === 'product' && params.id) {
-        newPath = `/product/${params.id}`;
+    let path;
+    if (page === 'product' && params.id) {
+        path = `/product?id=${params.id}`;
+    } else if (Object.keys(params).length > 0) {
+        const queryString = Object.entries(params)
+            .map(([key, value]) => `${key}=${value}`)
+            .join('&');
+        path = `/${page}?${queryString}`;
     } else {
-        newPath = `/${page}`;
+        path = `/${page}`;
     }
     
-    if (window.location.pathname !== newPath) {
-        window.history.pushState({ page, params }, '', newPath);
-    }
+    console.log(`Navigating to ${page} with path: ${path}`);
     
-    updateActiveLink(page);
+    history.pushState({ page, params }, '', path);
+    
+    const pageModules = {
+        'home': () => renderHomePage(),
+        'products': () => renderProductsPage(),
+        'product': () => renderProductDetailPage(params.id),
+        'about': () => renderAboutPage(),
+        'checkout': () => renderCheckoutPage(),
+        'profile': () => renderProfilePage(),
+        'orders': () => renderOrdersPage(),
+        'admin': () => renderAdminPage()
+    };
+    
     currentPage = page;
     
-    const pageContainer = document.getElementById('page-container');
-    pageContainer.innerHTML = '';
-    
-    switch (page) {
-        case 'home':
-            renderHomePage();
-            break;
-        case 'products':
-            renderProductsPage();
-            break;
-        case 'product':
-            renderProductDetailPage(params.id);
-            break;
-        case 'about':
-            renderAboutPage();
-            break;
-        case 'checkout':
-            renderCheckoutPage();
-            break;
-        case 'profile':
-            renderProfilePage();
-            break;
-        case 'orders':
-            renderOrdersPage();
-            break;
-        case 'admin':
-            renderAdminPage();
-            break;
-        default:
-            renderNotFoundPage();
+    try {
+        pageModules[page]();
+        updateActiveLink(page);
+        
+        // Always initialize user menu after navigation
+        setTimeout(reinitializeUI, 100);
+        
+        window.scrollTo(0, 0);
+    } catch (error) {
+        console.error(`Error rendering page ${page}:`, error);
+        renderNotFoundPage();
     }
 };
 
@@ -211,4 +182,9 @@ const updateActiveLink = (page) => {
     if (activeLink) {
         activeLink.classList.add('active');
     }
-}; 
+};
+
+const reinitializeUI = () => {
+    // Re-initialize user menu
+    initUserMenu();
+};

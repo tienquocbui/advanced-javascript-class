@@ -83,11 +83,13 @@ export const renderProductForm = (product = null) => {
                     ${displayImageUrl ? `
                     <div class="current-image">
                         <img src="${displayImageUrl}" alt="${product?.title || 'Product'}" style="max-width: 100px; margin-top: 10px; border-radius: 8px;">
+                        ${isEdit ? `<button type="button" id="remove-image" class="btn btn-secondary" style="margin-top: 5px; display: block; padding: 5px 10px; font-size: 0.8rem;">Remove Image</button>` : ''}
                     </div>` : ''}
                 </div>
                 
                 <div class="form-actions">
                     <button type="submit" class="apple-button">${isEdit ? 'Update Product' : 'Create Product'}</button>
+                    ${isEdit ? `<button type="button" id="delete-product" class="btn btn-secondary" style="margin-top: 10px; width: 100%; background: rgba(255, 0, 0, 0.7); color: white;">Delete Product</button>` : ''}
                     <button type="button" id="cancel-btn" class="btn btn-secondary" style="margin-top: 10px; width: 100%; background: rgba(60, 60, 67, 0.2);">Cancel</button>
                 </div>
             </form>
@@ -98,6 +100,53 @@ export const renderProductForm = (product = null) => {
     
     const productForm = document.getElementById('product-form');
     const cancelButton = document.getElementById('cancel-btn');
+    const removeImageBtn = document.getElementById('remove-image');
+    const deleteProductBtn = document.getElementById('delete-product');
+    
+    if (removeImageBtn) {
+        removeImageBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const currentImageDiv = document.querySelector('.current-image');
+            if (currentImageDiv) {
+                currentImageDiv.remove();
+            }
+            
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.id = 'removeImage';
+            hiddenField.value = 'true';
+            productForm.appendChild(hiddenField);
+        });
+    }
+    
+    if (deleteProductBtn) {
+        deleteProductBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            if (confirm(`Are you sure you want to delete "${product.title}"?`)) {
+                try {
+                    deleteProductBtn.textContent = 'Deleting...';
+                    deleteProductBtn.disabled = true;
+                    
+                    await fetch(`https://kelvins-assignment.onrender.com/api/products/${product._id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    
+                    closeModal();
+                    showToast('Product deleted successfully!', 'success');
+                    navigateTo('products');
+                } catch (error) {
+                    console.error('Failed to delete product:', error);
+                    showToast('Failed to delete product. Please try again.', 'error');
+                    deleteProductBtn.textContent = 'Delete Product';
+                    deleteProductBtn.disabled = false;
+                }
+            }
+        });
+    }
     
     productForm.addEventListener('submit', (e) => handleProductSubmit(e, product?._id));
     cancelButton.addEventListener('click', closeModal);
@@ -116,8 +165,8 @@ const handleProductSubmit = async (e, productId = null) => {
         const price = document.getElementById('price').value.trim();
         const description = document.getElementById('description').value.trim();
         const productImage = document.getElementById('productImage').files[0];
+        const shouldRemoveImage = document.getElementById('removeImage')?.value === 'true';
         
-        // Input validation
         if (!title || !price || !description) {
             submitButton.textContent = originalButtonText;
             submitButton.disabled = false;
@@ -131,14 +180,11 @@ const handleProductSubmit = async (e, productId = null) => {
         formData.append('title', title);
         formData.append('price', numericPrice);
         formData.append('description', description);
-        
         formData.append('category', 'general');
         
-        if (!productImage) {
-            formData.append('imageUrl', '/assets/product.png');
-        }
-        
-        if (productImage) {
+        if (shouldRemoveImage) {
+            formData.append('removeImage', 'true');
+        } else if (productImage) {
             if (productImage.size > 5 * 1024 * 1024) {
                 submitButton.textContent = originalButtonText;
                 submitButton.disabled = false;
@@ -155,6 +201,8 @@ const handleProductSubmit = async (e, productId = null) => {
             }
             
             formData.append('image', productImage);
+        } else if (!productId) {
+            formData.append('imageUrl', '/assets/product.png');
         }
         
         console.log('Submitting product with data:', { 
@@ -163,23 +211,20 @@ const handleProductSubmit = async (e, productId = null) => {
             description, 
             category: 'general',
             hasImage: !!productImage,
-            defaultImage: !productImage
+            removeImage: shouldRemoveImage
         });
         
         let response;
         if (productId) {
-            // Update existing product
             formData.append('productId', productId);
             response = await productsAPI.updateProduct(productId, formData);
             showToast('Product updated successfully!', 'success');
         } else {
-            // Create new product
             response = await productsAPI.createProduct(formData);
             showToast('Product created successfully!', 'success');
         }
         
         closeModal();
-        
         navigateTo('products');
         
         document.dispatchEvent(new CustomEvent('productUpdated', {

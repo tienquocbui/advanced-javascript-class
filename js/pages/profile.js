@@ -7,13 +7,13 @@ export const renderProfilePage = async () => {
     const pageContainer = document.getElementById('page-container');
     
     if (!isLoggedIn()) {
+        showToast('Please login to view your profile', 'error');
         document.dispatchEvent(new CustomEvent('showLogin'));
         return;
     }
     
     const user = getCurrentUser();
     
-    // Render profile page
     pageContainer.innerHTML = `
         <div class="profile-page">
             <h1>My Profile</h1>
@@ -23,7 +23,7 @@ export const renderProfilePage = async () => {
                     <div class="profile-avatar">
                         ${user.imageUrl 
                             ? `<img src="${user.imageUrl}" alt="${user.firstName}">` 
-                            : `<div class="profile-initial">${user.firstName.charAt(0)}</div>`
+                            : `<div class="profile-initial">${user.firstName.charAt(0).toUpperCase()}</div>`
                         }
                         <button id="change-avatar" class="change-avatar">
                             <i class="fas fa-camera"></i>
@@ -33,7 +33,7 @@ export const renderProfilePage = async () => {
                     <div class="profile-info">
                         <h2>${user.firstName} ${user.lastName}</h2>
                         <p>${user.email}</p>
-                        <p class="profile-role">${user.role || 'Customer'}</p>
+                        <div class="profile-role">${user.role || 'Customer'}</div>
                     </div>
                     
                     <div class="profile-nav">
@@ -56,60 +56,63 @@ export const renderProfilePage = async () => {
                         <form id="profile-form">
                             <div class="form-group">
                                 <label for="firstName" class="form-label">First Name</label>
-                                <input type="text" id="firstName" class="form-input" value="${user.firstName}" required>
+                                <input type="text" id="firstName" class="apple-input" value="${user.firstName}" required>
                             </div>
                             
                             <div class="form-group">
                                 <label for="lastName" class="form-label">Last Name</label>
-                                <input type="text" id="lastName" class="form-input" value="${user.lastName}" required>
+                                <input type="text" id="lastName" class="apple-input" value="${user.lastName}" required>
                             </div>
                             
                             <div class="form-group">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" id="email" class="form-input" value="${user.email}" disabled>
+                                <input type="email" id="email" class="apple-input" value="${user.email}" disabled>
                                 <p class="form-help">Email cannot be changed</p>
                             </div>
                             
                             <div class="form-group">
                                 <label for="role" class="form-label">Role</label>
-                                <input type="text" id="role" class="form-input" value="${user.role || 'Customer'}" disabled>
+                                <input type="text" id="role" class="apple-input" value="${user.role || 'Customer'}" disabled>
                             </div>
                             
                             <input type="file" id="avatar-input" accept="image/*" style="display: none;">
                             
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <button type="submit" class="apple-button">Save Changes</button>
                             </div>
                         </form>
                     </div>
                     
                     <div id="orders-section" class="profile-section">
                         <h2>My Orders</h2>
-                        <p>Loading your orders...</p>
+                        <div class="orders-loading">
+                            <div class="loading-spinner"></div>
+                            <p>Loading your orders...</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     `;
     
-    
     document.querySelectorAll('.profile-nav-item').forEach(item => {
         if (item.id === 'logout-btn') {
             item.addEventListener('click', () => {
                 document.dispatchEvent(new CustomEvent('logout'));
+                navigateTo('home');
             });
         } else {
             item.addEventListener('click', () => {
                 const section = item.getAttribute('data-section');
                 
                 if (section === 'orders') {
-                    navigateTo('orders');
-                    return;
+                    loadOrders();
                 }
                 
                 document.querySelectorAll('.profile-section').forEach(section => {
                     section.classList.remove('active');
                 });
+                
                 document.querySelectorAll('.profile-nav-item').forEach(navItem => {
                     navItem.classList.remove('active');
                 });
@@ -131,6 +134,18 @@ export const renderProfilePage = async () => {
         const file = e.target.files[0];
         if (!file) return;
         
+        // Validate file size and type
+        if (file.size > 5 * 1024 * 1024) {
+            showToast('Image too large. Please select an image under 5MB.', 'error');
+            return;
+        }
+        
+        const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (!validTypes.includes(file.type)) {
+            showToast('Invalid file type. Please select a JPEG, PNG, WebP or GIF image.', 'error');
+            return;
+        }
+        
         try {
             const formData = new FormData();
             formData.append('firstName', user.firstName);
@@ -142,14 +157,15 @@ export const renderProfilePage = async () => {
             
             const response = await authAPI.updateUserProfile(formData);
             
-            // Update user data in localStorage
             localStorage.setItem('user', JSON.stringify(response.user));
             
             showToast('Profile picture updated successfully!', 'success');
             
-            // Reload page to show updated avatar
             renderProfilePage();
             
+            document.dispatchEvent(new CustomEvent('userUpdated', {
+                detail: response.user
+            }));
         } catch (error) {
             changeAvatarBtn.innerHTML = '<i class="fas fa-camera"></i>';
             changeAvatarBtn.disabled = false;
@@ -191,7 +207,6 @@ export const renderProfilePage = async () => {
             document.dispatchEvent(new CustomEvent('userUpdated', {
                 detail: response.user
             }));
-            
         } catch (error) {
             const submitBtn = profileForm.querySelector('button[type="submit"]');
             submitBtn.disabled = false;
@@ -200,4 +215,72 @@ export const renderProfilePage = async () => {
             showToast(error.message || 'Failed to update profile. Please try again.', 'error');
         }
     });
+    
+    async function loadOrders() {
+        const ordersSection = document.getElementById('orders-section');
+        
+        try {
+            const response = await fetch('https://kelvins-assignment.onrender.com/api/invoices', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.message || 'Failed to load orders');
+            }
+            
+            if (data.invoices && data.invoices.length > 0) {
+                let ordersHtml = '<div class="orders-list">';
+                
+                data.invoices.forEach(order => {
+                    ordersHtml += `
+                        <div class="order-item">
+                            <div class="order-header">
+                                <div class="order-info">
+                                    <div class="order-date">${new Date(order.createdAt).toLocaleDateString()}</div>
+                                    <div class="order-id">Order #${order._id.slice(-8)}</div>
+                                    <div class="order-status status-${order.status || 'pending'}">${order.status || 'Pending'}</div>
+                                </div>
+                                <div class="order-summary">
+                                    <div class="order-total">$${parseFloat(order.totalAmount).toFixed(2)}</div>
+                                    <div class="order-items-count">${order.items.length} item${order.items.length !== 1 ? 's' : ''}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                ordersHtml += '</div>';
+                ordersSection.innerHTML = `<h2>My Orders</h2>${ordersHtml}`;
+            } else {
+                ordersSection.innerHTML = `
+                    <h2>My Orders</h2>
+                    <div class="no-orders">
+                        <p>You haven't placed any orders yet.</p>
+                        <button class="btn btn-primary" id="start-shopping">Start Shopping</button>
+                    </div>
+                `;
+                
+                document.getElementById('start-shopping')?.addEventListener('click', () => {
+                    navigateTo('products');
+                });
+            }
+        } catch (error) {
+            console.error('Error loading orders:', error);
+            ordersSection.innerHTML = `
+                <h2>My Orders</h2>
+                <div class="error-message">
+                    <p>Failed to load orders. Please try again later.</p>
+                    <button class="btn btn-primary" id="retry-orders">Retry</button>
+                </div>
+            `;
+            
+            document.getElementById('retry-orders')?.addEventListener('click', () => {
+                loadOrders();
+            });
+        }
+    }
 }; 
