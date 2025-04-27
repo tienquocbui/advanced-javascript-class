@@ -51,12 +51,12 @@ const handleLogin = async (event) => {
 };
 
 const handleSignup = async (event) => {
-    const { firstName, lastName, email, password } = event.detail;
-    console.log('Signup attempt with data:', { firstName, lastName, email, password: '***' });
+    const { firstName, lastName, email, password, role } = event.detail;
+    console.log('Signup attempt with data:', { firstName, lastName, email, password: '***', role });
     
     try {
         console.log('Calling authAPI.signup...');
-        const result = await authAPI.signup({ firstName, lastName, email, password });
+        const result = await authAPI.signup({ firstName, lastName, email, password, role });
         console.log('Signup API response:', result);
         
         showToast('Account created successfully! You can now log in.', 'success');
@@ -73,7 +73,6 @@ const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     
-    // Update UI
     updateUserInterface(false);
     
     showToast('You have been logged out.', 'info');

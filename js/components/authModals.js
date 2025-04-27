@@ -2,25 +2,19 @@ import { authAPI } from '../api/apiService.js';
 import { showToast } from '../utils/toast.js';
 import { getCurrentUser } from '../utils/auth.js';
 
-const showModal = (title, content) => {
+const showAuthModal = (content) => {
     const modalContainer = document.getElementById('modal-container');
     const modalBackdrop = document.getElementById('modal-backdrop');
     
-    modalContainer.innerHTML = `
-        <div class="modal-header">
-            <h2 class="modal-title">${title}</h2>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-content">
-            ${content}
-        </div>
-    `;
+    modalContainer.innerHTML = content;
     
     modalContainer.classList.remove('hidden');
     modalBackdrop.classList.remove('hidden');
     
     const closeButton = modalContainer.querySelector('.modal-close');
-    closeButton.addEventListener('click', closeModal);
+    if (closeButton) {
+        closeButton.addEventListener('click', closeModal);
+    }
     
     modalBackdrop.addEventListener('click', closeModal);
 };
@@ -35,23 +29,37 @@ const closeModal = () => {
 
 export const renderLoginModal = () => {
     const content = `
-        <form id="login-form">
-            <div class="form-group">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" class="form-input" required>
+        <div class="auth-modal apple-style">
+            <button class="modal-close">&times;</button>
+            <div class="auth-container">
+                <h2>Login</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <input type="email" id="email" class="form-input apple-input" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" class="form-input apple-input" placeholder="Password" required>
+                    </div>
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me">Keep me signed in</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary apple-button">Login</button>
+                    <div class="auth-links">
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+                    <p class="auth-alt">
+                        Don't have an account? <a href="#" id="show-signup">Sign up</a>
+                    </p>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" class="form-input" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-            <p class="form-footer">
-                Don't have an account? <a href="#" id="show-signup">Sign up</a>
-            </p>
-        </form>
+        </div>
     `;
     
-    showModal('Login', content);
+    showAuthModal(content);
     
     const loginForm = document.getElementById('login-form');
     const showSignupLink = document.getElementById('show-signup');
@@ -65,31 +73,59 @@ export const renderLoginModal = () => {
 
 export const renderSignupModal = () => {
     const content = `
-        <form id="signup-form">
-            <div class="form-group">
-                <label for="firstName" class="form-label">First Name</label>
-                <input type="text" id="firstName" class="form-input" required>
+        <div class="auth-modal apple-style">
+            <button class="modal-close">&times;</button>
+            <div class="auth-container">
+                <h2>Create Account</h2>
+                <form id="signup-form">
+                    <div class="name-group">
+                        <div class="form-group half">
+                            <input type="text" id="firstName" class="form-input apple-input" placeholder="First Name" required>
+                        </div>
+                        <div class="form-group half">
+                            <input type="text" id="lastName" class="form-input apple-input" placeholder="Last Name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" class="form-input apple-input" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" class="form-input apple-input" placeholder="Password" required>
+                    </div>
+                    <div class="form-group role-selector">
+                        <label class="role-label">Account Type</label>
+                        <div class="role-options">
+                            <div class="role-option">
+                                <input type="radio" id="role-customer" name="role" value="customer" checked>
+                                <label for="role-customer">
+                                    <span class="role-icon">👤</span>
+                                    <span class="role-title">Customer</span>
+                                    <span class="role-desc">Shop products</span>
+                                </label>
+                            </div>
+                            <div class="role-option">
+                                <input type="radio" id="role-admin" name="role" value="admin">
+                                <label for="role-admin">
+                                    <span class="role-icon">👑</span>
+                                    <span class="role-title">Admin</span>
+                                    <span class="role-desc">Manage products</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary apple-button">Create Account</button>
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+                    <p class="auth-alt">
+                        Already have an account? <a href="#" id="show-login">Login</a>
+                    </p>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="lastName" class="form-label">Last Name</label>
-                <input type="text" id="lastName" class="form-input" required>
-            </div>
-            <div class="form-group">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" class="form-input" required>
-            </div>
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" class="form-input" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Sign Up</button>
-            <p class="form-footer">
-                Already have an account? <a href="#" id="show-login">Login</a>
-            </p>
-        </form>
+        </div>
     `;
     
-    showModal('Create Account', content);
+    showAuthModal(content);
     
     const signupForm = document.getElementById('signup-form');
     const showLoginLink = document.getElementById('show-login');
@@ -174,10 +210,29 @@ const handleSignupSubmit = async (e) => {
     const lastName = document.getElementById('lastName').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    const role = document.querySelector('input[name="role"]:checked').value;
     
-    document.dispatchEvent(new CustomEvent('signup', {
-        detail: { firstName, lastName, email, password }
-    }));
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
+    submitButton.textContent = 'Creating Account...';
+    submitButton.disabled = true;
+    
+    try {
+        console.log('Signup attempt with data:', { firstName, lastName, email, password: '***', role });
+        
+        const result = await authAPI.signup({ firstName, lastName, email, password, role });
+        console.log('Signup API response:', result);
+        
+        showToast('Account created successfully! You can now log in.', 'success');
+        
+        // Switch to login modal
+        renderLoginModal();
+    } catch (error) {
+        console.error('Signup error:', error);
+        showToast(error.message || 'Signup failed. Please try again.', 'error');
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
+    }
 };
 
 const handleProfileUpdate = async (e) => {
