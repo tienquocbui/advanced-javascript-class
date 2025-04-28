@@ -2819,4 +2819,22 @@ main {
 
 .change-password-btn:hover {
     background-color: #dbeafe;
+}
+
+.change-avatar-text {
+    display: block;
+    text-align: center;
+    color: var(--accent);
+    margin: 0 auto 20px;
+    padding: 5px;
+    font-size: 0.9rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.change-avatar-text:hover {
+    color: var(--accent-secondary);
+    text-decoration: underline;
 } 

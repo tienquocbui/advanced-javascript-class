@@ -26,10 +26,10 @@ export const renderProfilePage = async () => {
                             ? `<img src="${user.imageUrl}" alt="${user.firstName}" class="delete-profile-image">` 
                             : `<div class="profile-initial">${user.firstName.charAt(0).toUpperCase()}</div>`
                         }
-                        <button id="change-avatar" class="change-avatar">
-                            <i class="fas fa-camera"></i>
-                        </button>
                     </div>
+                    <button id="change-avatar" class="change-avatar-text">
+                        Change Avatar
+                    </button>
                     
                     <div class="profile-info">
                         <h2 class="profile-user-name">${user.firstName} ${user.lastName}</h2>
@@ -232,7 +232,7 @@ export const renderProfilePage = async () => {
                 detail: data.user
             }));
         } catch (error) {
-            changeAvatarBtn.innerHTML = '<i class="fas fa-camera"></i>';
+            changeAvatarBtn.innerHTML = 'Change Avatar';
             changeAvatarBtn.disabled = false;
             
             showToast(error.message || 'Failed to update profile picture. Please try again.', 'error');
