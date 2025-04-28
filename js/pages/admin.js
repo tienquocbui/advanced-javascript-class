@@ -264,97 +264,111 @@ const loadOrders = async () => {
 };
 
 const showAddProductModal = () => {
-    const modalContent = `
-        <div class="modal-header">
-            <h2 class="modal-title">Add New Product</h2>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-content">
-            <form id="add-product-form">
-                <div class="form-group">
-                    <label for="title" class="form-label">Title</label>
-                    <input type="text" id="title" class="form-input" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" id="price" class="form-input" min="0" step="0.01" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea id="description" class="form-input" rows="4" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="imageUrl" class="form-label">Image URL</label>
-                    <input type="url" id="imageUrl" class="form-input" required>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Product</button>
-                </div>
-            </form>
-        </div>
+    const form = `
+        <form id="add-product-form">
+            <div class="form-group">
+                <label for="product-name" class="form-label">Product Name</label>
+                <input type="text" id="product-name" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-price" class="form-label">Price ($)</label>
+                <input type="number" id="product-price" class="form-input" min="0.01" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-description" class="form-label">Description</label>
+                <textarea id="product-description" class="form-input" rows="4" required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-image" class="form-label">Image URL</label>
+                <input type="url" id="product-image" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-category" class="form-label">Category</label>
+                <input type="text" id="product-category" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-inventory" class="form-label">Inventory</label>
+                <input type="number" id="product-inventory" class="form-input" min="0" required>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" id="cancel-product" class="btn btn-secondary">Cancel</button>
+                <button type="submit" id="save-product" class="btn btn-primary">Add Product</button>
+            </div>
+        </form>
     `;
     
-    showModal(modalContent);
+    // Update modal title
+    const modalTitle = document.getElementById('product-modal').querySelector('.modal-title');
+    modalTitle.textContent = 'Add New Product';
     
+    // Show the modal with form content
+    showModal(form);
+    
+    // Setup event listeners for the form
     const addProductForm = document.getElementById('add-product-form');
-    const cancelBtn = document.querySelector('.cancel-btn');
-    const closeBtn = document.querySelector('.modal-close');
-    
-    addProductForm.addEventListener('submit', handleAddProduct);
-    cancelBtn.addEventListener('click', closeModal);
-    closeBtn.addEventListener('click', closeModal);
+    if (addProductForm) {
+        addProductForm.addEventListener('submit', handleAddProduct);
+    }
 };
 
 const showEditProductModal = (product) => {
-    const modalContent = `
-        <div class="modal-header">
-            <h2 class="modal-title">Edit Product</h2>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-content">
-            <form id="edit-product-form" data-id="${product._id}">
-                <div class="form-group">
-                    <label for="title" class="form-label">Title</label>
-                    <input type="text" id="title" class="form-input" value="${product.title}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" id="price" class="form-input" min="0" step="0.01" value="${product.price}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea id="description" class="form-input" rows="4" required>${product.description}</textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="imageUrl" class="form-label">Image URL</label>
-                    <input type="url" id="imageUrl" class="form-input" value="${product.imageUrl}" required>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Product</button>
-                </div>
-            </form>
-        </div>
+    const form = `
+        <form id="edit-product-form" data-id="${product._id}">
+            <div class="form-group">
+                <label for="product-name" class="form-label">Product Name</label>
+                <input type="text" id="product-name" class="form-input" value="${product.title}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-price" class="form-label">Price ($)</label>
+                <input type="number" id="product-price" class="form-input" min="0.01" step="0.01" value="${product.price}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-description" class="form-label">Description</label>
+                <textarea id="product-description" class="form-input" rows="4" required>${product.description}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-image" class="form-label">Image URL</label>
+                <input type="url" id="product-image" class="form-input" value="${product.imageUrl}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-category" class="form-label">Category</label>
+                <input type="text" id="product-category" class="form-input" value="${product.category || ''}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="product-inventory" class="form-label">Inventory</label>
+                <input type="number" id="product-inventory" class="form-input" min="0" value="${product.inventory || 0}" required>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" id="cancel-product" class="btn btn-secondary">Cancel</button>
+                <button type="submit" id="save-product" class="btn btn-primary">Update Product</button>
+            </div>
+        </form>
     `;
     
-    showModal(modalContent);
+    // Update modal title
+    const modalTitle = document.getElementById('product-modal').querySelector('.modal-title');
+    modalTitle.textContent = 'Edit Product';
     
+    // Show the modal with form content
+    showModal(form);
+    
+    // Set up the event listeners for the form
     const editProductForm = document.getElementById('edit-product-form');
-    const cancelBtn = document.querySelector('.cancel-btn');
-    const closeBtn = document.querySelector('.modal-close');
-    
-    editProductForm.addEventListener('submit', handleEditProduct);
-    cancelBtn.addEventListener('click', closeModal);
-    closeBtn.addEventListener('click', closeModal);
+    if (editProductForm) {
+        editProductForm.addEventListener('submit', handleEditProduct);
+    }
 };
 
 const showDeleteConfirmation = (product) => {
@@ -460,16 +474,20 @@ const showOrderDetails = (order) => {
 const handleAddProduct = async (e) => {
     e.preventDefault();
     
-    const title = document.getElementById('title').value;
-    const price = document.getElementById('price').value;
-    const description = document.getElementById('description').value;
-    const imageUrl = document.getElementById('imageUrl').value;
+    const title = document.getElementById('product-name').value;
+    const price = document.getElementById('product-price').value;
+    const description = document.getElementById('product-description').value;
+    const imageUrl = document.getElementById('product-image').value;
+    const category = document.getElementById('product-category').value;
+    const inventory = document.getElementById('product-inventory').value;
     
     const productData = {
         title,
         price,
         description,
-        imageUrl
+        imageUrl,
+        category,
+        inventory
     };
     
     try {
@@ -499,12 +517,45 @@ const handleAddProduct = async (e) => {
 const handleEditProduct = async (e) => {
     e.preventDefault();
     
+    const productId = e.target.getAttribute('data-id');
+    const title = document.getElementById('product-name').value;
+    const price = document.getElementById('product-price').value;
+    const description = document.getElementById('product-description').value;
+    const imageUrl = document.getElementById('product-image').value;
+    const category = document.getElementById('product-category').value;
+    const inventory = document.getElementById('product-inventory').value;
     
-    closeModal();
+    const productData = {
+        id: productId,
+        title,
+        price,
+        description,
+        imageUrl,
+        category,
+        inventory
+    };
     
-    showToast('Product updated successfully! (Note: This is a mock implementation)', 'success');
-    
-    loadProducts();
+    try {
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Updating...';
+        
+        await productsAPI.updateProduct(productId, productData);
+        
+        closeModal();
+        
+        showToast('Product updated successfully!', 'success');
+        
+        loadProducts();
+    } catch (error) {
+        console.error('Error updating product:', error);
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Update Product';
+        
+        showToast(error.message || 'Failed to update product. Please try again.', 'error');
+    }
 };
 
 const handleDeleteProduct = async (productId) => {
@@ -517,23 +568,60 @@ const handleDeleteProduct = async (productId) => {
 };
 
 const showModal = (content) => {
-    const modalContainer = document.getElementById('modal-container');
-    const modalBackdrop = document.getElementById('modal-backdrop');
+    // Get the proper modal elements from the admin.html
+    const modalBackdrop = document.getElementById('product-modal');
+    const modalContainer = modalBackdrop.querySelector('.modal-container');
+    const modalContent = modalBackdrop.querySelector('.modal-content');
+    const modalHeader = modalBackdrop.querySelector('.modal-header');
+    const modalTitle = modalBackdrop.querySelector('.modal-title');
     
-    modalContainer.innerHTML = content;
+    // Check if we're using the content as a whole modal or just the form content
+    if (content.includes('modal-header')) {
+        // Parse the content to extract title and body
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+        
+        // Extract the title from the modal header
+        const titleElement = tempDiv.querySelector('.modal-title');
+        if (titleElement) {
+            modalTitle.textContent = titleElement.textContent;
+        }
+        
+        // Extract the inner content
+        const innerContent = tempDiv.querySelector('.modal-content');
+        if (innerContent) {
+            modalContent.innerHTML = innerContent.innerHTML;
+        }
+    } else {
+        // Just update the form content directly
+        modalContent.innerHTML = content;
+    }
     
-    modalContainer.classList.remove('hidden');
+    // Show the modal
     modalBackdrop.classList.remove('hidden');
     
-    modalBackdrop.addEventListener('click', closeModal);
+    // Setup event listeners
+    const closeBtn = modalBackdrop.querySelector('.modal-close');
+    const cancelBtn = modalBackdrop.querySelector('#cancel-product');
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', closeModal);
+    }
 };
 
 const closeModal = () => {
-    const modalContainer = document.getElementById('modal-container');
-    const modalBackdrop = document.getElementById('modal-backdrop');
+    const productModal = document.getElementById('product-modal');
+    const orderModal = document.getElementById('order-modal');
+    const confirmDeleteModal = document.getElementById('confirm-delete-modal');
     
-    modalContainer.classList.add('hidden');
-    modalBackdrop.classList.add('hidden');
+    // Hide all possible modals
+    productModal.classList.add('hidden');
+    orderModal.classList.add('hidden');
+    confirmDeleteModal.classList.add('hidden');
 };
 
 const getStatusClass = (status) => {
