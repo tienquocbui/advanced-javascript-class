@@ -90,7 +90,7 @@ export const renderHomePage = async () => {
                         <img src="${imageUrl}" alt="${product.title}" class="product-image" 
                              onerror="this.onerror=null; this.src='${DEFAULT_PRODUCT_IMAGE}';">
                     </div>
-                    <div class="featured-product-info">
+                    <div class="product-info">
                         <h3 class="product-title">${product.title}</h3>
                         <div class="product-price">${formatCurrency(product.price)}</div>
                         <p class="product-description">${product.description}</p>
