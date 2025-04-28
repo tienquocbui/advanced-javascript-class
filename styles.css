@@ -1956,7 +1956,7 @@ main {
     font-weight: 600;
 }
 
-.change-avatar {
+.profile-avatar .change-avatar {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -1969,9 +1969,10 @@ main {
     justify-content: center;
     border: 2px solid var(--background);
     transition: all var(--transition-speed);
+    z-index: 10;
 }
 
-.change-avatar:hover {
+.profile-avatar .change-avatar:hover {
     background-color: var(--accent);
 }
 
@@ -2001,6 +2002,7 @@ main {
     justify-content: center;
     align-items: center;
     border-radius: 50%;
+    z-index: 5;
 }
 
 .profile-info {

@@ -10,15 +10,12 @@
  * @returns {string} - The formatted currency string
  */
 export const formatCurrency = (value, currencySymbol = '$', locale = 'en-US') => {
-  // Convert string value to number if necessary
   const numericValue = typeof value === 'string' ? parseFloat(value) : value;
   
-  // Handle invalid inputs
   if (isNaN(numericValue)) {
     return `${currencySymbol}0.00`;
   }
   
-  // Use Intl.NumberFormat for better localization support
   const formatted = new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'USD',
@@ -27,7 +24,6 @@ export const formatCurrency = (value, currencySymbol = '$', locale = 'en-US') =>
     maximumFractionDigits: 2
   }).format(numericValue);
   
-  // Replace the USD symbol with the provided currency symbol
   return formatted.replace(/\$|USD/, currencySymbol);
 };
 

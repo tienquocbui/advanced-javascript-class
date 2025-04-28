@@ -142,6 +142,19 @@ export const renderProductDetail = async (params) => {
             navigateTo('checkout');
         });
         
+        // Update product details in the DOM
+        const productTitleEl = document.querySelector('.product-detail-title');
+        const productDescriptionEl = document.querySelector('.product-detail-description');
+        const productPriceEl = document.querySelector('.product-detail-price');
+        const categoryEl = document.querySelector('.product-detail-category');
+        const ratingEl = document.querySelector('.product-detail-rating');
+        
+        productTitleEl.textContent = product.title;
+        productDescriptionEl.textContent = product.description;
+        productPriceEl.textContent = formatCurrency(product.price);
+        categoryEl.textContent = product.category;
+        ratingEl.textContent = `${product.rating.rate} ★ (${product.rating.count} reviews)`;
+        
     } catch (error) {
         console.error('Error fetching product:', error);
         
