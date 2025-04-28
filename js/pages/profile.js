@@ -157,12 +157,14 @@ export const renderProfilePage = async () => {
             changeAvatarBtn.disabled = true;
             
             const token = localStorage.getItem('token');
-            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/userUpdate', {
-                method: 'POST',
+            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/update', {
+                method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
                 },
-                body: formData
+                body: formData,
+                mode: 'cors',
+                credentials: 'omit'
             });
             
             if (!response.ok) {
@@ -210,12 +212,14 @@ export const renderProfilePage = async () => {
             submitBtn.textContent = 'Saving...';
             
             const token = localStorage.getItem('token');
-            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/userUpdate', {
-                method: 'POST', 
+            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/update', {
+                method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`,
                 },
-                body: formData
+                body: formData,
+                mode: 'cors',
+                credentials: 'omit'
             });
             
             if (!response.ok) {
