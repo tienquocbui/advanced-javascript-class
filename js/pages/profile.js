@@ -23,7 +23,8 @@ export const renderProfilePage = async () => {
                 <div class="profile-sidebar">
                     <div class="profile-avatar">
                         ${user.imageUrl 
-                            ? `<img src="${user.imageUrl}" alt="${user.firstName}" class="delete-profile-image">` 
+                            ? `<img src="${user.imageUrl}" alt="${user.firstName}" class="delete-profile-image">
+                               <div class="delete-overlay"><i class="fas fa-trash"></i></div>` 
                             : `<div class="profile-initial">${user.firstName.charAt(0).toUpperCase()}</div>`
                         }
                         <button id="change-avatar" class="change-avatar">
