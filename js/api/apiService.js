@@ -126,7 +126,7 @@ export const authAPI = {
     signup: (userData) => apiRequest('/api/users/signup', 'POST', userData),
     login: (credentials) => apiRequest('/api/users/login', 'POST', credentials),
     getUserProfile: () => apiRequest('/api/users/userProfile', 'GET', null, true),
-    updateUserProfile: (formData) => uploadRequest('/api/users/profile', formData, true, 'POST')
+    updateUserProfile: (formData) => uploadRequest('/api/users/userUpdate', formData, true, 'PUT')
 };
 
 // Products

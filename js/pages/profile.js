@@ -151,7 +151,7 @@ export const renderProfilePage = async () => {
             const formData = new FormData();
             formData.append('firstName', user.firstName);
             formData.append('lastName', user.lastName);
-            formData.append('profileImage', file);
+            formData.append('image', file);
             
             changeAvatarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             changeAvatarBtn.disabled = true;
