@@ -1969,7 +1969,7 @@ main {
     justify-content: center;
     border: 2px solid var(--background);
     transition: all var(--transition-speed);
-    z-index: 10;
+    z-index: 20;
 }
 
 .profile-avatar .change-avatar:hover {
