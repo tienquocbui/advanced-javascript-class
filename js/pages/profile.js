@@ -156,16 +156,29 @@ export const renderProfilePage = async () => {
             changeAvatarBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             changeAvatarBtn.disabled = true;
             
-            const response = await authAPI.updateUserProfile(formData);
+            const token = localStorage.getItem('token');
+            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/userUpdate', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
             
-            localStorage.setItem('user', JSON.stringify(response.user));
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            localStorage.setItem('user', JSON.stringify(data.user));
             
             showToast('Profile picture updated successfully!', 'success');
             
             renderProfilePage();
             
             document.dispatchEvent(new CustomEvent('userUpdated', {
-                detail: response.user
+                detail: data.user
             }));
         } catch (error) {
             changeAvatarBtn.innerHTML = '<i class="fas fa-camera"></i>';
@@ -196,9 +209,22 @@ export const renderProfilePage = async () => {
             submitBtn.disabled = true;
             submitBtn.textContent = 'Saving...';
             
-            const response = await authAPI.updateUserProfile(formData);
+            const token = localStorage.getItem('token');
+            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/userUpdate', {
+                method: 'POST', 
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
             
-            localStorage.setItem('user', JSON.stringify(response.user));
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            localStorage.setItem('user', JSON.stringify(data.user));
             
             showToast('Profile updated successfully!', 'success');
             
@@ -206,7 +232,7 @@ export const renderProfilePage = async () => {
             submitBtn.textContent = 'Save Changes';
             
             document.dispatchEvent(new CustomEvent('userUpdated', {
-                detail: response.user
+                detail: data.user
             }));
         } catch (error) {
             const submitBtn = profileForm.querySelector('button[type="submit"]');
