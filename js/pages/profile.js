@@ -23,7 +23,7 @@ export const renderProfilePage = async () => {
                 <div class="profile-sidebar">
                     <div class="profile-avatar">
                         ${user.imageUrl 
-                            ? `<img src="${user.imageUrl}" alt="${user.firstName}">` 
+                            ? `<img src="${user.imageUrl}" alt="${user.firstName}" class="delete-profile-image">` 
                             : `<div class="profile-initial">${user.firstName.charAt(0).toUpperCase()}</div>`
                         }
                         <button id="change-avatar" class="change-avatar">
@@ -130,6 +130,55 @@ export const renderProfilePage = async () => {
     changeAvatarBtn.addEventListener('click', () => {
         avatarInput.click();
     });
+    
+    const profileImageEl = document.querySelector('.delete-profile-image');
+    if (profileImageEl) {
+        profileImageEl.addEventListener('click', () => {
+            if (confirm('Do you want to remove your profile picture?')) {
+                deleteProfileImage();
+            }
+        });
+        
+        profileImageEl.style.cursor = 'pointer';
+    }
+    
+    const deleteProfileImage = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const formData = new FormData();
+            formData.append('firstName', user.firstName);
+            formData.append('lastName', user.lastName);
+            formData.append('removeImage', 'true');
+            
+            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/userUpdate', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData,
+                mode: 'cors',
+                credentials: 'omit'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            localStorage.setItem('user', JSON.stringify(data.user));
+            
+            showToast('Profile picture removed successfully!', 'success');
+            
+            renderProfilePage();
+            
+            document.dispatchEvent(new CustomEvent('userUpdated', {
+                detail: data.user
+            }));
+        } catch (error) {
+            showToast(error.message || 'Failed to remove profile picture. Please try again.', 'error');
+        }
+    };
     
     avatarInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];

@@ -1936,20 +1936,19 @@ main {
     width: 120px;
     height: 120px;
     margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.profile-avatar img {
+.profile-avatar img, .profile-avatar .profile-initial {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 50%;
 }
 
 .profile-initial {
-    width: 100%;
-    height: 100%;
     background-color: var(--accent);
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1974,6 +1973,34 @@ main {
 
 .change-avatar:hover {
     background-color: var(--accent);
+}
+
+.profile-avatar .delete-profile-image {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.profile-avatar .delete-profile-image:hover {
+    filter: brightness(90%);
+}
+
+.profile-avatar .delete-profile-image:hover::after {
+    content: '\f1f8'; /* trash icon */
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
 }
 
 .profile-info {
