@@ -157,8 +157,8 @@ export const renderProfilePage = async () => {
             changeAvatarBtn.disabled = true;
             
             const token = localStorage.getItem('token');
-            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/update', {
-                method: 'PUT',
+            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/userUpdate', {
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -212,8 +212,8 @@ export const renderProfilePage = async () => {
             submitBtn.textContent = 'Saving...';
             
             const token = localStorage.getItem('token');
-            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/update', {
-                method: 'PUT',
+            const response = await fetch('https://kelvins-assignment.onrender.com/api/users/userUpdate', {
+                method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
