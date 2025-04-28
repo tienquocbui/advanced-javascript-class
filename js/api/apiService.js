@@ -104,21 +104,17 @@ const uploadRequest = async (endpoint, formData, requiresAuth = true, method = '
         
         const response = await fetch(url, options);
         
-        let responseData;
-        try {
-            responseData = await response.json();
-        } catch (e) {
-            const text = await response.text();
-            console.log('Non-JSON response:', text);
-            responseData = { message: text || 'Unknown server error' };
-        }
-        
         if (!response.ok) {
-            console.error('Server response error:', responseData);
-            throw new Error(responseData.message || `Server returned ${response.status}: ${response.statusText}`);
+            const errorMessage = await response.text();
+            console.error('Server response error:', errorMessage);
+            throw new Error(errorMessage || `Server returned ${response.status}: ${response.statusText}`);
         }
         
-        return responseData;
+        try {
+            return await response.json();
+        } catch (e) {
+            return { success: true, message: 'Operation completed successfully' };
+        }
     } catch (error) {
         console.error('Upload Request Error:', error);
         throw error;
@@ -130,7 +126,7 @@ export const authAPI = {
     signup: (userData) => apiRequest('/api/users/signup', 'POST', userData),
     login: (credentials) => apiRequest('/api/users/login', 'POST', credentials),
     getUserProfile: () => apiRequest('/api/users/userProfile', 'GET', null, true),
-    updateUserProfile: (formData) => uploadRequest('/api/users/userUpdate', formData, true, 'POST')
+    updateUserProfile: (formData) => uploadRequest('/api/users/profile', formData, true, 'POST')
 };
 
 // Products
