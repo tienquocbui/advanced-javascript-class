@@ -37,13 +37,12 @@ const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = 
     };
     
     if (method !== 'GET' && data) {
-        // If data is FormData, don't set Content-Type and send as is
-        if (data instanceof FormData) {
-            delete headers['Content-Type'];
-            options.body = data;
-        } else {
-            options.body = JSON.stringify(data);
-        }
+        // Ensure data is properly formatted
+        const requestData = {
+            ...data,
+            price: Number(data.price)
+        };
+        options.body = JSON.stringify(requestData);
         console.log('Request body:', options.body);
     }
     

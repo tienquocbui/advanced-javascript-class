@@ -468,7 +468,7 @@ const handleAddProduct = async (e) => {
         return;
     }
     
-    const formData = {
+    const productData = {
         title,
         description,
         price,
@@ -476,7 +476,7 @@ const handleAddProduct = async (e) => {
     };
     
     try {
-        console.log('Sending product data:', formData); // Debug log
+        console.log('Sending product data:', productData); // Debug log
         
         // Check if we have a valid token
         const token = localStorage.getItem('token');
@@ -485,7 +485,7 @@ const handleAddProduct = async (e) => {
             return;
         }
         
-        const response = await productsAPI.createProduct(formData);
+        const response = await productsAPI.createProduct(productData);
         console.log('Product creation response:', response); // Debug log
         
         if (response && response.product) {
