@@ -134,7 +134,8 @@ export const productsAPI = {
     getAllProducts: () => apiRequest('/api/products'),
     getProductById: (id) => apiRequest(`/api/products/${id}`),
     createProduct: (productData) => uploadRequest('/api/products/create', productData, true, 'POST'),
-    updateProduct: (id, productData) => uploadRequest(`/api/products/update/${id}`, productData, true, 'PUT')
+    updateProduct: (id, productData) => uploadRequest(`/api/products/${id}`, productData, true, 'PUT'),
+    deleteProduct: (id) => apiRequest(`/api/products/${id}`, 'DELETE', null, true)
 };
 
 export const ordersAPI = {
