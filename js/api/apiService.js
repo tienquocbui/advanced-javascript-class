@@ -13,6 +13,8 @@ const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = 
     const url = `${BASE_URL}${endpoint}`;
     
     console.log('Making API request to:', url);
+    console.log('Request method:', method);
+    console.log('Request data:', data);
     
     const headers = {
         'Content-Type': 'application/json'
@@ -24,6 +26,7 @@ const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = 
             throw new Error('Authentication required but token not found');
         }
         headers['Authorization'] = `Bearer ${token}`;
+        console.log('Auth token present:', !!token);
     }
     
     const options = {
@@ -35,12 +38,15 @@ const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = 
     
     if (method !== 'GET' && data) {
         options.body = JSON.stringify(data);
+        console.log('Request body:', options.body);
     }
     
     try {
+        console.log('Sending request with options:', options);
         const response = await fetch(url, options);
         
         console.log('API Response status:', response.status);
+        console.log('API Response headers:', Object.fromEntries(response.headers.entries()));
         
         const contentType = response.headers.get('Content-Type');
         if (contentType && contentType.includes('application/json')) {

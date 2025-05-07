@@ -450,9 +450,17 @@ const showOrderDetails = (order) => {
 const handleAddProduct = async (e) => {
     e.preventDefault();
     
-    const title = document.getElementById('product-name').value.trim();
-    const description = document.getElementById('product-description').value.trim();
-    const price = parseFloat(document.getElementById('product-price').value);
+    // Get form values
+    const titleInput = document.getElementById('product-name');
+    const descriptionInput = document.getElementById('product-description');
+    const priceInput = document.getElementById('product-price');
+    
+    // Get and validate values
+    const title = titleInput.value.trim();
+    const description = descriptionInput.value.trim();
+    const price = parseFloat(priceInput.value);
+
+    console.log('Form values:', { title, description, price }); // Debug log
 
     // Validate required fields
     if (!title || !price || isNaN(price)) {
@@ -469,6 +477,14 @@ const handleAddProduct = async (e) => {
     
     try {
         console.log('Sending product data:', formData); // Debug log
+        
+        // Check if we have a valid token
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showToast('Please log in to create products', 'error');
+            return;
+        }
+        
         const response = await productsAPI.createProduct(formData);
         console.log('Product creation response:', response); // Debug log
         
