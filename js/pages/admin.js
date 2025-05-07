@@ -32,27 +32,6 @@ export const renderAdminPage = async () => {
         return;
     }
     
-    const productForm = document.getElementById('product-form');
-    const closeProductModal = document.getElementById('close-product-modal');
-    const cancelProduct = document.getElementById('cancel-product');
-    
-    productForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (productForm.hasAttribute('data-edit-mode')) {
-            handleEditProduct(e);
-        } else {
-            handleAddProduct(e);
-        }
-    });
-    
-    closeProductModal.addEventListener('click', () => {
-        document.getElementById('product-modal').classList.add('hidden');
-    });
-    
-    cancelProduct.addEventListener('click', () => {
-        document.getElementById('product-modal').classList.add('hidden');
-    });
-    
     pageContainer.innerHTML = `
         <div class="admin-page">
             <h1>Admin Dashboard</h1>
@@ -96,7 +75,63 @@ export const renderAdminPage = async () => {
                 </div>
             </div>
         </div>
+
+        <!-- Product Modal -->
+        <div id="product-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="product-modal-title">Add New Product</h2>
+                    <button id="close-product-modal" class="modal-close">&times;</button>
+                </div>
+                <form id="product-form" class="product-form">
+                    <input type="hidden" id="product-id">
+                    <div class="form-group">
+                        <label for="product-name">Product Name *</label>
+                        <input type="text" id="product-name" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-description">Description</label>
+                        <textarea id="product-description" name="description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-price">Price *</label>
+                        <input type="number" id="product-price" name="price" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancel-product" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     `;
+
+    const productForm = document.getElementById('product-form');
+    const closeProductModal = document.getElementById('close-product-modal');
+    const cancelProduct = document.getElementById('cancel-product');
+    
+    if (productForm) {
+        productForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (productForm.hasAttribute('data-edit-mode')) {
+                handleEditProduct(e);
+            } else {
+                handleAddProduct(e);
+            }
+        });
+    }
+    
+    if (closeProductModal) {
+        closeProductModal.addEventListener('click', () => {
+            document.getElementById('product-modal').classList.add('hidden');
+        });
+    }
+    
+    if (cancelProduct) {
+        cancelProduct.addEventListener('click', () => {
+            document.getElementById('product-modal').classList.add('hidden');
+        });
+    }
     
     document.querySelectorAll('.admin-nav-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -415,23 +450,27 @@ const showOrderDetails = (order) => {
 const handleAddProduct = async (e) => {
     e.preventDefault();
     
-    const formData = {
-        title: document.getElementById('product-name').value.trim(),
-        description: document.getElementById('product-description').value.trim(),
-        price: parseFloat(document.getElementById('product-price').value),
-        imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
-    };
+    const title = document.getElementById('product-name').value.trim();
+    const description = document.getElementById('product-description').value.trim();
+    const price = parseFloat(document.getElementById('product-price').value);
 
     // Validate required fields
-    if (!formData.title || !formData.price) {
-        showToast('Please fill in all required fields', 'error');
+    if (!title || !price || isNaN(price)) {
+        showToast('Please fill in all required fields with valid values', 'error');
         return;
     }
+    
+    const formData = {
+        title,
+        description,
+        price,
+        imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
+    };
     
     try {
         const response = await productsAPI.createProduct(formData);
         showToast('Product created successfully!', 'success');
-        closeModal();
+        document.getElementById('product-modal').classList.add('hidden');
         loadProducts();
     } catch (error) {
         console.error('Error creating product:', error);
@@ -443,23 +482,27 @@ const handleEditProduct = async (e) => {
     e.preventDefault();
     
     const productId = document.getElementById('product-id').value;
-    const formData = {
-        title: document.getElementById('product-name').value.trim(),
-        description: document.getElementById('product-description').value.trim(),
-        price: parseFloat(document.getElementById('product-price').value),
-        imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
-    };
+    const title = document.getElementById('product-name').value.trim();
+    const description = document.getElementById('product-description').value.trim();
+    const price = parseFloat(document.getElementById('product-price').value);
 
     // Validate required fields
-    if (!formData.title || !formData.price) {
-        showToast('Please fill in all required fields', 'error');
+    if (!title || !price || isNaN(price)) {
+        showToast('Please fill in all required fields with valid values', 'error');
         return;
     }
+    
+    const formData = {
+        title,
+        description,
+        price,
+        imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
+    };
     
     try {
         const response = await productsAPI.updateProduct(productId, formData);
         showToast('Product updated successfully!', 'success');
-        closeModal();
+        document.getElementById('product-modal').classList.add('hidden');
         loadProducts();
     } catch (error) {
         console.error('Error updating product:', error);
