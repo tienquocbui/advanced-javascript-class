@@ -468,13 +468,17 @@ const handleAddProduct = async (e) => {
     };
     
     try {
+        console.log('Sending product data:', formData); // Debug log
         const response = await productsAPI.createProduct(formData);
+        console.log('Product creation response:', response); // Debug log
         showToast('Product created successfully!', 'success');
         document.getElementById('product-modal').classList.add('hidden');
+        document.getElementById('product-form').reset();
         loadProducts();
     } catch (error) {
         console.error('Error creating product:', error);
-        showToast(error.message || 'Failed to create product. Please try again.', 'error');
+        const errorMessage = error.message || 'Failed to create product. Please try again.';
+        showToast(errorMessage, 'error');
     }
 };
 
@@ -500,13 +504,17 @@ const handleEditProduct = async (e) => {
     };
     
     try {
+        console.log('Sending product update data:', formData); // Debug log
         const response = await productsAPI.updateProduct(productId, formData);
+        console.log('Product update response:', response); // Debug log
         showToast('Product updated successfully!', 'success');
         document.getElementById('product-modal').classList.add('hidden');
+        document.getElementById('product-form').reset();
         loadProducts();
     } catch (error) {
         console.error('Error updating product:', error);
-        showToast(error.message || 'Failed to update product. Please try again.', 'error');
+        const errorMessage = error.message || 'Failed to update product. Please try again.';
+        showToast(errorMessage, 'error');
     }
 };
 
