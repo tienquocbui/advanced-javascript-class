@@ -37,7 +37,13 @@ const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = 
     };
     
     if (method !== 'GET' && data) {
-        options.body = JSON.stringify(data);
+        // If data is FormData, don't set Content-Type and send as is
+        if (data instanceof FormData) {
+            delete headers['Content-Type'];
+            options.body = data;
+        } else {
+            options.body = JSON.stringify(data);
+        }
         console.log('Request body:', options.body);
     }
     
@@ -139,8 +145,26 @@ export const authAPI = {
 export const productsAPI = {
     getAllProducts: () => apiRequest('/api/products'),
     getProductById: (id) => apiRequest(`/api/products/${id}`),
-    createProduct: (productData) => apiRequest('/api/products/create', 'POST', productData, true),
-    updateProduct: (id, productData) => apiRequest(`/api/products/${id}`, 'PUT', productData, true),
+    createProduct: (productData) => {
+        // Ensure we're sending a plain object, not FormData
+        const data = {
+            title: productData.title,
+            price: productData.price,
+            description: productData.description,
+            imageUrl: productData.imageUrl
+        };
+        return apiRequest('/api/products/create', 'POST', data, true);
+    },
+    updateProduct: (id, productData) => {
+        // Ensure we're sending a plain object, not FormData
+        const data = {
+            title: productData.title,
+            price: productData.price,
+            description: productData.description,
+            imageUrl: productData.imageUrl
+        };
+        return apiRequest(`/api/products/${id}`, 'PUT', data, true);
+    },
     deleteProduct: (id) => apiRequest(`/api/products/${id}`, 'DELETE', null, true)
 };
 
