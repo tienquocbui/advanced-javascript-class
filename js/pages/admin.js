@@ -508,9 +508,15 @@ const handleEditProduct = async (e) => {
     e.preventDefault();
     
     const productId = document.getElementById('product-id').value;
-    const title = document.getElementById('product-name').value.trim();
-    const description = document.getElementById('product-description').value.trim();
-    const price = parseFloat(document.getElementById('product-price').value);
+    const titleInput = document.getElementById('product-name');
+    const descriptionInput = document.getElementById('product-description');
+    const priceInput = document.getElementById('product-price');
+    
+    const title = titleInput.value.trim();
+    const description = descriptionInput.value.trim();
+    const price = parseFloat(priceInput.value);
+
+    console.log('Edit form values:', { title, description, price }); // Debug log
 
     // Validate required fields
     if (!title || !price || isNaN(price)) {
@@ -518,21 +524,33 @@ const handleEditProduct = async (e) => {
         return;
     }
     
-    const formData = {
-        title,
-        description,
-        price,
-        imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
-    };
-    
     try {
-        console.log('Sending product update data:', formData); // Debug log
-        const response = await productsAPI.updateProduct(productId, formData);
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showToast('Please log in to edit products', 'error');
+            return;
+        }
+        
+        const productData = {
+            title,
+            description,
+            price,
+            imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
+        };
+        
+        console.log('Sending product update data:', productData); // Debug log
+        
+        const response = await productsAPI.updateProduct(productId, productData);
         console.log('Product update response:', response); // Debug log
-        showToast('Product updated successfully!', 'success');
-        document.getElementById('product-modal').classList.add('hidden');
-        document.getElementById('product-form').reset();
-        loadProducts();
+        
+        if (response && response.product) {
+            showToast('Product updated successfully!', 'success');
+            document.getElementById('product-modal').classList.add('hidden');
+            document.getElementById('product-form').reset();
+            loadProducts();
+        } else {
+            throw new Error('Invalid response from server');
+        }
     } catch (error) {
         console.error('Error updating product:', error);
         const errorMessage = error.message || 'Failed to update product. Please try again.';
@@ -541,12 +559,27 @@ const handleEditProduct = async (e) => {
 };
 
 const handleDeleteProduct = async (productId) => {
-    
-    closeModal();
-    
-    showToast('Product deleted successfully! (Note: This is a mock implementation)', 'success');
-    
-    loadProducts();
+    try {
+        // Check if we have a valid token
+        const token = localStorage.getItem('token');
+        if (!token) {
+            showToast('Please log in to delete products', 'error');
+            return;
+        }
+        
+        console.log('Deleting product:', productId); // Debug log
+        
+        const response = await productsAPI.deleteProduct(productId);
+        console.log('Product deletion response:', response); // Debug log
+        
+        showToast('Product deleted successfully!', 'success');
+        closeModal();
+        loadProducts();
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        const errorMessage = error.message || 'Failed to delete product. Please try again.';
+        showToast(errorMessage, 'error');
+    }
 };
 
 const showModal = (content) => {
