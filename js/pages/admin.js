@@ -80,8 +80,8 @@ export const renderAdminPage = async () => {
         <div id="product-modal" class="modal hidden">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 id="product-modal-title">Add New Product</h2>
-                    <button id="close-product-modal" class="modal-close">&times;</button>
+                    <h2 id="modal-title">Add New Product</h2>
+                    <button class="modal-close">&times;</button>
                 </div>
                 <form id="product-form" class="product-form">
                     <input type="hidden" id="product-id">
@@ -98,7 +98,7 @@ export const renderAdminPage = async () => {
                         <input type="number" id="product-price" name="price" step="0.01" min="0" required>
                     </div>
                     <div class="form-actions">
-                        <button type="button" id="cancel-product" class="btn btn-secondary">Cancel</button>
+                        <button type="button" class="btn btn-secondary" id="cancel-product">Cancel</button>
                         <button type="submit" class="btn btn-primary">Save Product</button>
                     </div>
                 </form>
@@ -322,29 +322,53 @@ const loadOrders = async () => {
 const showAddProductModal = () => {
     const modal = document.getElementById('product-modal');
     const form = document.getElementById('product-form');
-    const title = document.getElementById('product-modal-title');
+    const title = document.getElementById('modal-title');
     
-    title.textContent = 'Add New Product';
+    // Reset form and set title
     form.reset();
+    title.textContent = 'Add New Product';
     form.removeAttribute('data-edit-mode');
+    document.getElementById('product-id').value = '';
     
+    // Show modal
     modal.classList.remove('hidden');
+    
+    // Add event listeners
+    const closeBtn = modal.querySelector('.modal-close');
+    const cancelBtn = document.getElementById('cancel-product');
+    
+    closeBtn.onclick = () => modal.classList.add('hidden');
+    cancelBtn.onclick = () => modal.classList.add('hidden');
+    
+    // Handle form submission
+    form.onsubmit = (e) => handleAddProduct(e);
 };
 
 const showEditProductModal = (product) => {
     const modal = document.getElementById('product-modal');
     const form = document.getElementById('product-form');
-    const title = document.getElementById('product-modal-title');
+    const title = document.getElementById('modal-title');
     
+    // Set form values
     title.textContent = 'Edit Product';
     form.setAttribute('data-edit-mode', 'true');
-    
     document.getElementById('product-id').value = product._id;
     document.getElementById('product-name').value = product.title;
-    document.getElementById('product-description').value = product.description;
+    document.getElementById('product-description').value = product.description || '';
     document.getElementById('product-price').value = product.price;
     
+    // Show modal
     modal.classList.remove('hidden');
+    
+    // Add event listeners
+    const closeBtn = modal.querySelector('.modal-close');
+    const cancelBtn = document.getElementById('cancel-product');
+    
+    closeBtn.onclick = () => modal.classList.add('hidden');
+    cancelBtn.onclick = () => modal.classList.add('hidden');
+    
+    // Handle form submission
+    form.onsubmit = (e) => handleEditProduct(e);
 };
 
 const showDeleteConfirmation = (product) => {
