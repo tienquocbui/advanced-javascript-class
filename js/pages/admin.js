@@ -32,6 +32,27 @@ export const renderAdminPage = async () => {
         return;
     }
     
+    const productForm = document.getElementById('product-form');
+    const closeProductModal = document.getElementById('close-product-modal');
+    const cancelProduct = document.getElementById('cancel-product');
+    
+    productForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (productForm.hasAttribute('data-edit-mode')) {
+            handleEditProduct(e);
+        } else {
+            handleAddProduct(e);
+        }
+    });
+    
+    closeProductModal.addEventListener('click', () => {
+        document.getElementById('product-modal').classList.add('hidden');
+    });
+    
+    cancelProduct.addEventListener('click', () => {
+        document.getElementById('product-modal').classList.add('hidden');
+    });
+    
     pageContainer.innerHTML = `
         <div class="admin-page">
             <h1>Admin Dashboard</h1>
@@ -395,11 +416,17 @@ const handleAddProduct = async (e) => {
     e.preventDefault();
     
     const formData = {
-        title: document.getElementById('product-name').value,
-        description: document.getElementById('product-description').value,
+        title: document.getElementById('product-name').value.trim(),
+        description: document.getElementById('product-description').value.trim(),
         price: parseFloat(document.getElementById('product-price').value),
         imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
     };
+
+    // Validate required fields
+    if (!formData.title || !formData.price) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+    }
     
     try {
         const response = await productsAPI.createProduct(formData);
@@ -408,7 +435,7 @@ const handleAddProduct = async (e) => {
         loadProducts();
     } catch (error) {
         console.error('Error creating product:', error);
-        showToast('Failed to create product. Please try again.', 'error');
+        showToast(error.message || 'Failed to create product. Please try again.', 'error');
     }
 };
 
@@ -417,11 +444,17 @@ const handleEditProduct = async (e) => {
     
     const productId = document.getElementById('product-id').value;
     const formData = {
-        title: document.getElementById('product-name').value,
-        description: document.getElementById('product-description').value,
+        title: document.getElementById('product-name').value.trim(),
+        description: document.getElementById('product-description').value.trim(),
         price: parseFloat(document.getElementById('product-price').value),
         imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
     };
+
+    // Validate required fields
+    if (!formData.title || !formData.price) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+    }
     
     try {
         const response = await productsAPI.updateProduct(productId, formData);
@@ -430,7 +463,7 @@ const handleEditProduct = async (e) => {
         loadProducts();
     } catch (error) {
         console.error('Error updating product:', error);
-        showToast('Failed to update product. Please try again.', 'error');
+        showToast(error.message || 'Failed to update product. Please try again.', 'error');
     }
 };
 
