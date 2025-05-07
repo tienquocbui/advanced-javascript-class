@@ -264,97 +264,31 @@ const loadOrders = async () => {
 };
 
 const showAddProductModal = () => {
-    const modalContent = `
-        <div class="modal-header">
-            <h2 class="modal-title">Add New Product</h2>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-content">
-            <form id="add-product-form">
-                <div class="form-group">
-                    <label for="title" class="form-label">Title</label>
-                    <input type="text" id="title" class="form-input" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" id="price" class="form-input" min="0" step="0.01" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea id="description" class="form-input" rows="4" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="imageUrl" class="form-label">Image URL</label>
-                    <input type="url" id="imageUrl" class="form-input" required>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Product</button>
-                </div>
-            </form>
-        </div>
-    `;
+    const modal = document.getElementById('product-modal');
+    const form = document.getElementById('product-form');
+    const title = document.getElementById('product-modal-title');
     
-    showModal(modalContent);
+    title.textContent = 'Add New Product';
+    form.reset();
+    form.removeAttribute('data-edit-mode');
     
-    const addProductForm = document.getElementById('add-product-form');
-    const cancelBtn = document.querySelector('.cancel-btn');
-    const closeBtn = document.querySelector('.modal-close');
-    
-    addProductForm.addEventListener('submit', handleAddProduct);
-    cancelBtn.addEventListener('click', closeModal);
-    closeBtn.addEventListener('click', closeModal);
+    modal.classList.remove('hidden');
 };
 
 const showEditProductModal = (product) => {
-    const modalContent = `
-        <div class="modal-header">
-            <h2 class="modal-title">Edit Product</h2>
-            <button class="modal-close">&times;</button>
-        </div>
-        <div class="modal-content">
-            <form id="edit-product-form" data-id="${product._id}">
-                <div class="form-group">
-                    <label for="title" class="form-label">Title</label>
-                    <input type="text" id="title" class="form-input" value="${product.title}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="price" class="form-label">Price</label>
-                    <input type="number" id="price" class="form-input" min="0" step="0.01" value="${product.price}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea id="description" class="form-input" rows="4" required>${product.description}</textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="imageUrl" class="form-label">Image URL</label>
-                    <input type="url" id="imageUrl" class="form-input" value="${product.imageUrl}" required>
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Update Product</button>
-                </div>
-            </form>
-        </div>
-    `;
+    const modal = document.getElementById('product-modal');
+    const form = document.getElementById('product-form');
+    const title = document.getElementById('product-modal-title');
     
-    showModal(modalContent);
+    title.textContent = 'Edit Product';
+    form.setAttribute('data-edit-mode', 'true');
     
-    const editProductForm = document.getElementById('edit-product-form');
-    const cancelBtn = document.querySelector('.cancel-btn');
-    const closeBtn = document.querySelector('.modal-close');
+    document.getElementById('product-id').value = product._id;
+    document.getElementById('product-name').value = product.title;
+    document.getElementById('product-description').value = product.description;
+    document.getElementById('product-price').value = product.price;
     
-    editProductForm.addEventListener('submit', handleEditProduct);
-    cancelBtn.addEventListener('click', closeModal);
-    closeBtn.addEventListener('click', closeModal);
+    modal.classList.remove('hidden');
 };
 
 const showDeleteConfirmation = (product) => {
@@ -460,51 +394,44 @@ const showOrderDetails = (order) => {
 const handleAddProduct = async (e) => {
     e.preventDefault();
     
-    const title = document.getElementById('title').value;
-    const price = document.getElementById('price').value;
-    const description = document.getElementById('description').value;
-    const imageUrl = document.getElementById('imageUrl').value;
-    
-    const productData = {
-        title,
-        price,
-        description,
-        imageUrl
+    const formData = {
+        title: document.getElementById('product-name').value,
+        description: document.getElementById('product-description').value,
+        price: parseFloat(document.getElementById('product-price').value),
+        imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
     };
     
     try {
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Adding...';
-        
-        await productsAPI.createProduct(productData);
-        
+        const response = await productsAPI.createProduct(formData);
+        showToast('Product created successfully!', 'success');
         closeModal();
-        
-        showToast('Product added successfully!', 'success');
-        
         loadProducts();
-        
     } catch (error) {
-        console.error('Error adding product:', error);
-        
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Add Product';
-        
-        showToast(error.message || 'Failed to add product. Please try again.', 'error');
+        console.error('Error creating product:', error);
+        showToast('Failed to create product. Please try again.', 'error');
     }
 };
 
 const handleEditProduct = async (e) => {
     e.preventDefault();
     
+    const productId = document.getElementById('product-id').value;
+    const formData = {
+        title: document.getElementById('product-name').value,
+        description: document.getElementById('product-description').value,
+        price: parseFloat(document.getElementById('product-price').value),
+        imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
+    };
     
-    closeModal();
-    
-    showToast('Product updated successfully! (Note: This is a mock implementation)', 'success');
-    
-    loadProducts();
+    try {
+        const response = await productsAPI.updateProduct(productId, formData);
+        showToast('Product updated successfully!', 'success');
+        closeModal();
+        loadProducts();
+    } catch (error) {
+        console.error('Error updating product:', error);
+        showToast('Failed to update product. Please try again.', 'error');
+    }
 };
 
 const handleDeleteProduct = async (productId) => {
