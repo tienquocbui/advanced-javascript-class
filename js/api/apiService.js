@@ -145,11 +145,11 @@ export const authAPI = {
 // Products
 export const productsAPI = {
     async getAllProducts() {
-        return apiRequest('/products', 'GET');
+        return apiRequest('/api/products', 'GET');
     },
     
     async getProductById(id) {
-        return apiRequest(`/products/${id}`, 'GET');
+        return apiRequest(`/api/products/${id}`, 'GET');
     },
     
     async createProduct(data) {
@@ -164,7 +164,7 @@ export const productsAPI = {
         };
         
         console.log('Formatted product data:', productData);
-        return apiRequest('/products/create', 'POST', productData, true);
+        return apiRequest('/api/products/create', 'POST', productData, true);
     },
     
     async updateProduct(id, data) {
@@ -176,11 +176,11 @@ export const productsAPI = {
             imageUrl: data.imageUrl || 'https://via.placeholder.com/400x400?text=Product+Image'
         };
         
-        return apiRequest(`/products/${id}`, 'PUT', productData, true);
+        return apiRequest(`/api/products/${id}`, 'PUT', productData, true);
     },
     
     async deleteProduct(id) {
-        return apiRequest(`/products/${id}`, 'DELETE', null, true);
+        return apiRequest(`/api/products/${id}`, 'DELETE', null, true);
     }
 };
 
