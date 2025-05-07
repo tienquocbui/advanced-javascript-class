@@ -471,10 +471,15 @@ const handleAddProduct = async (e) => {
         console.log('Sending product data:', formData); // Debug log
         const response = await productsAPI.createProduct(formData);
         console.log('Product creation response:', response); // Debug log
-        showToast('Product created successfully!', 'success');
-        document.getElementById('product-modal').classList.add('hidden');
-        document.getElementById('product-form').reset();
-        loadProducts();
+        
+        if (response && response.product) {
+            showToast('Product created successfully!', 'success');
+            document.getElementById('product-modal').classList.add('hidden');
+            document.getElementById('product-form').reset();
+            loadProducts();
+        } else {
+            throw new Error('Invalid response from server');
+        }
     } catch (error) {
         console.error('Error creating product:', error);
         const errorMessage = error.message || 'Failed to create product. Please try again.';
