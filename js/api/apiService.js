@@ -155,26 +155,46 @@ export const productsAPI = {
     async createProduct(data) {
         console.log('Creating product with data:', data);
         
-        // Ensure data is properly formatted
-        const productData = {
-            title: data.title,
-            price: Number(data.price),
-            description: data.description || '',
-            imageUrl: data.imageUrl || 'https://via.placeholder.com/400x400?text=Product+Image'
-        };
+        // Handle both FormData and regular objects
+        let productData;
+        if (data instanceof FormData) {
+            productData = {
+                title: data.get('title'),
+                price: Number(data.get('price')),
+                description: data.get('description') || '',
+                imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
+            };
+        } else {
+            productData = {
+                title: data.title,
+                price: Number(data.price),
+                description: data.description || '',
+                imageUrl: data.imageUrl || 'https://via.placeholder.com/400x400?text=Product+Image'
+            };
+        }
         
         console.log('Formatted product data:', productData);
         return apiRequest('/api/products/create', 'POST', productData, true);
     },
     
     async updateProduct(id, data) {
-        // Ensure data is properly formatted
-        const productData = {
-            title: data.title,
-            price: Number(data.price),
-            description: data.description || '',
-            imageUrl: data.imageUrl || 'https://via.placeholder.com/400x400?text=Product+Image'
-        };
+        // Handle both FormData and regular objects
+        let productData;
+        if (data instanceof FormData) {
+            productData = {
+                title: data.get('title'),
+                price: Number(data.get('price')),
+                description: data.get('description') || '',
+                imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
+            };
+        } else {
+            productData = {
+                title: data.title,
+                price: Number(data.price),
+                description: data.description || '',
+                imageUrl: data.imageUrl || 'https://via.placeholder.com/400x400?text=Product+Image'
+            };
+        }
         
         return apiRequest(`/api/products/${id}`, 'PUT', productData, true);
     },
