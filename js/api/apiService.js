@@ -144,29 +144,44 @@ export const authAPI = {
 
 // Products
 export const productsAPI = {
-    getAllProducts: () => apiRequest('/api/products'),
-    getProductById: (id) => apiRequest(`/api/products/${id}`),
-    createProduct: (productData) => {
-        const data = {
-            title: productData.title,
-            price: Number(productData.price),
-            description: productData.description || '',
-            imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
-        };
+    async getAllProducts() {
+        return apiRequest('/products', 'GET');
+    },
+    
+    async getProductById(id) {
+        return apiRequest(`/products/${id}`, 'GET');
+    },
+    
+    async createProduct(data) {
         console.log('Creating product with data:', data);
-        return apiRequest('/api/products/create', 'POST', data, true);
-    },
-    updateProduct: (id, productData) => {
-        const data = {
-            title: productData.title,
-            price: Number(productData.price),
-            description: productData.description || '',
-            imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
+        
+        // Ensure data is properly formatted
+        const productData = {
+            title: data.title,
+            price: Number(data.price),
+            description: data.description || '',
+            imageUrl: data.imageUrl || 'https://via.placeholder.com/400x400?text=Product+Image'
         };
-        console.log('Updating product with data:', data);
-        return apiRequest(`/api/products/${id}`, 'PUT', data, true);
+        
+        console.log('Formatted product data:', productData);
+        return apiRequest('/products/create', 'POST', productData, true);
     },
-    deleteProduct: (id) => apiRequest(`/api/products/${id}`, 'DELETE', null, true)
+    
+    async updateProduct(id, data) {
+        // Ensure data is properly formatted
+        const productData = {
+            title: data.title,
+            price: Number(data.price),
+            description: data.description || '',
+            imageUrl: data.imageUrl || 'https://via.placeholder.com/400x400?text=Product+Image'
+        };
+        
+        return apiRequest(`/products/${id}`, 'PUT', productData, true);
+    },
+    
+    async deleteProduct(id) {
+        return apiRequest(`/products/${id}`, 'DELETE', null, true);
+    }
 };
 
 export const ordersAPI = {

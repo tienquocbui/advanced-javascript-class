@@ -468,22 +468,23 @@ const handleAddProduct = async (e) => {
         return;
     }
     
-    const productData = {
-        title,
-        description,
-        price,
-        imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
-    };
-    
     try {
-        console.log('Sending product data:', productData); // Debug log
-        
         // Check if we have a valid token
         const token = localStorage.getItem('token');
         if (!token) {
             showToast('Please log in to create products', 'error');
             return;
         }
+        
+        // Create product data object
+        const productData = {
+            title,
+            description,
+            price,
+            imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
+        };
+        
+        console.log('Sending product data:', productData); // Debug log
         
         const response = await productsAPI.createProduct(productData);
         console.log('Product creation response:', response); // Debug log
