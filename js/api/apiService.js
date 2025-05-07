@@ -39,8 +39,10 @@ const apiRequest = async (endpoint, method = 'GET', data = null, requiresAuth = 
     if (method !== 'GET' && data) {
         // Ensure data is properly formatted
         const requestData = {
-            ...data,
-            price: Number(data.price)
+            title: data.title,
+            price: Number(data.price),
+            description: data.description || '',
+            imageUrl: data.imageUrl || 'https://via.placeholder.com/400x400?text=Product+Image'
         };
         options.body = JSON.stringify(requestData);
         console.log('Request body:', options.body);
@@ -145,23 +147,23 @@ export const productsAPI = {
     getAllProducts: () => apiRequest('/api/products'),
     getProductById: (id) => apiRequest(`/api/products/${id}`),
     createProduct: (productData) => {
-        // Ensure we're sending a plain object, not FormData
         const data = {
             title: productData.title,
-            price: productData.price,
-            description: productData.description,
-            imageUrl: productData.imageUrl
+            price: Number(productData.price),
+            description: productData.description || '',
+            imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
         };
+        console.log('Creating product with data:', data);
         return apiRequest('/api/products/create', 'POST', data, true);
     },
     updateProduct: (id, productData) => {
-        // Ensure we're sending a plain object, not FormData
         const data = {
             title: productData.title,
-            price: productData.price,
-            description: productData.description,
-            imageUrl: productData.imageUrl
+            price: Number(productData.price),
+            description: productData.description || '',
+            imageUrl: 'https://via.placeholder.com/400x400?text=Product+Image'
         };
+        console.log('Updating product with data:', data);
         return apiRequest(`/api/products/${id}`, 'PUT', data, true);
     },
     deleteProduct: (id) => apiRequest(`/api/products/${id}`, 'DELETE', null, true)
